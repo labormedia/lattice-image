@@ -2,12 +2,14 @@ use matrix_graph::{
     MatrixImageBuilder,
     Channel::*,
     Neighborhood,
+    MatrixImage,
 };
 use std::error::Error;
 use rand::Rng;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = rand::thread_rng();
+    let n_sequence = 10;
     let (size_x, size_y) = (100,100);
     let mut matrix = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
     
@@ -21,6 +23,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     
+    for id in 0..n_sequence {
+        matrix = still_image(matrix)?;
+        
+        let prepend = "./animation/matrix_".to_owned();
+    
+        let _image = matrix
+            .draw(Green)?
+            .save(prepend+&id.to_string()+".png")?;
+
+    }
+    
+    Ok(())
+}
+
+fn still_image(mut matrix: MatrixImage) -> Result<MatrixImage, Box<dyn Error>> {
+    let size_x = matrix.get_height();
+    let size_y = matrix.get_width();
     for point_x in 0..size_x {
         for point_y in 0..size_y {
             let center = (point_x as u32,point_y as u32);
@@ -39,18 +58,5 @@ fn main() -> Result<(), Box<dyn Error>> {
             let _ = matrix.edit_point(center, average.try_into()?)?;
         }
     }
-    
-    let center = (50,50);
-    let _neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
-    let _ = matrix.edit_point(center, 0);
-    
-    let _image = matrix
-        .draw(Green)?
-        .save("matrix.png")?;
-        
-
-    #[cfg(debug_assertions)]
-    println!("{:?}", neighborhood);
-    
-    Ok(())
+    Ok(matrix)
 }
