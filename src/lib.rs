@@ -70,6 +70,10 @@ impl MatrixImage {
         self.data[absolute_point] = value;
         Ok(())
     }
+    pub fn get_point_value(&self, point: (u32,u32)) -> Result<u8, Box<dyn Error>>  {
+        let absolute_point: usize = self.to_absolute_point(point)?;
+        Ok(self.data[absolute_point])
+    }
     pub fn get_lattice_neighborhood(&self, point: (u32, u32), distance: usize, hood_type: Neighborhood) -> Vec<(u32, u32)> {
         let distance = distance as i64;
         let (point_x, point_y): (i64, i64) = (point.0 as i64, point.1 as i64);

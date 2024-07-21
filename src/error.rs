@@ -10,7 +10,7 @@ use std::{
 #[derive(Debug)]
 pub enum MatrixError {
     Overflow,
-    NotImplemented,
+    //NotImplemented,
 }
 
 impl Error for MatrixError {}
@@ -20,9 +20,6 @@ impl Display for MatrixError {
         match self {
             Self::Overflow => {
                 write!(f, "Overflow Image from Matrix")
-            },
-            _ => {
-                write!(f, "Unreachable error.")
             }
         }
     }

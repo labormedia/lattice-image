@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     for point_x in 0..size_x {
         for point_y in 0..size_y {
             let value: u8 = rng.gen();
-            matrix.edit_point((point_x as u32, point_y as u32), value);
+            let _ = matrix.edit_point((point_x as u32, point_y as u32), value);
         }
     }
     
@@ -22,12 +22,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
     
     for point in &neighborhood {
-        matrix.edit_point(*point, 200);
+        let _ = matrix.edit_point(*point, 200);
     }
     
-    matrix.edit_point(center, 0);
+    let _ = matrix.edit_point(center, 0);
     
-    let image = matrix
+    let _image = matrix
         .draw(Green)?
         .save("matrix.png")?;
         
