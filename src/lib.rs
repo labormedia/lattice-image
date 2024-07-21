@@ -77,7 +77,7 @@ impl MatrixImage {
         match hood_type {
             Neighborhood::VonNeumann => {
                 
-                for mut y_diff in 0..distance {
+                for y_diff in 0..distance {
                     for x_diff in -y_diff..=y_diff {
                         let mut x_left = (point_x+x_diff) % self.width as i64;
                         let mut y_left = (point_y-distance+y_diff) % self.height as i64;
@@ -91,7 +91,7 @@ impl MatrixImage {
                     };
                 }
                 
-                for mut y_diff in 0..=distance {
+                for y_diff in 0..=distance {
                     for x_diff in -y_diff..=y_diff {
                         let mut x_left = (point_x+x_diff) % self.width as i64;
                         let mut y_left = (point_y+(distance-y_diff)) % self.height as i64;
