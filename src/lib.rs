@@ -82,9 +82,14 @@ impl MatrixImage {
             Neighborhood::Moore => {
                 for y_diff in 0..=2*distance {
                     for x_diff in 0..=2*distance {
-                        let x_left = (point_x-distance+x_diff) % self.width as i64;
-                        let y_left = (point_y-distance+y_diff) % self.height as i64;
-                        println!("for {x_diff} {y_diff} : Set {x_left} {y_left}");
+                        let mut x_left = (point_x-distance+x_diff) % self.width as i64;
+                        let mut y_left = (point_y-distance+y_diff) % self.height as i64;
+                        if x_left < 0 {
+                            x_left = self.width as i64 + x_left;
+                        }
+                        if y_left < 0 {
+                            y_left = self.height as i64 - y_left;
+                        }
                         point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap())); // TODO: manage overflow error.
                     };
                 }

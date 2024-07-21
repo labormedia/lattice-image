@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .draw(Green)?
         .save("matrix.png")?;
         
-    let neighborhood = matrix.get_lattice_neighborhood((50,50), 1, Neighborhood::Moore);
+    let neighborhood = matrix.get_lattice_neighborhood((0,0), 4, Neighborhood::Moore);
     
     println!("{:?}", neighborhood);
     
