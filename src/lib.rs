@@ -76,8 +76,37 @@ impl MatrixImage {
         let mut point_set = Vec::new();
         match hood_type {
             Neighborhood::VonNeumann => {
-                panic!("{}",error::MatrixError::NotImplemented);  // TODO: implement neighborhood distance for VonNeumann.
-                point_set.push(point);
+                
+                for mut y_diff in 0..distance {
+                    for x_diff in -y_diff..=y_diff {
+                        let mut x_left = (point_x+x_diff) % self.width as i64;
+                        let mut y_left = (point_y-distance+y_diff) % self.height as i64;
+                        if x_left < 0 {
+                            x_left = self.width as i64 + x_left;
+                        }
+                        if y_left < 0 {
+                            y_left = self.height as i64 + y_left;
+                        }
+                        point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap())); 
+                    };
+                }
+                
+                for mut y_diff in 0..=distance {
+                    for x_diff in -y_diff..=y_diff {
+                        let mut x_left = (point_x+x_diff) % self.width as i64;
+                        let mut y_left = (point_y+(distance-y_diff)) % self.height as i64;
+                        if x_left < 0 {
+                            x_left = self.width as i64 + x_left;
+                        }
+                        if y_left < 0 {
+                            y_left = self.height as i64 + y_left;
+                        }
+                        point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap())); // TODO: manage overflow error.
+                    };
+                }
+                
+                //panic!("{}",error::MatrixError::NotImplemented);  // TODO: implement neighborhood distance for VonNeumann.
+                //point_set.push(point);
             },
             Neighborhood::Moore => {
                 for y_diff in 0..=2*distance {
@@ -88,7 +117,7 @@ impl MatrixImage {
                             x_left = self.width as i64 + x_left;
                         }
                         if y_left < 0 {
-                            y_left = self.height as i64 - y_left;
+                            y_left = self.height as i64 + y_left;
                         }
                         point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap())); // TODO: manage overflow error.
                     };

@@ -7,11 +7,20 @@ use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut matrix = MatrixImageBuilder::init().with_height_and_width(100,100).build();
+    let center = (50,50);
+    let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
+    
+    for point in &neighborhood {
+        matrix.edit_point(*point, 200);
+    }
+    
+    matrix.edit_point(center, 0);
+    
     let image = matrix
         .draw(Green)?
         .save("matrix.png")?;
         
-    let neighborhood = matrix.get_lattice_neighborhood((0,0), 4, Neighborhood::Moore);
+
     
     println!("{:?}", neighborhood);
     
