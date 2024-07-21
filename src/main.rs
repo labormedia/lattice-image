@@ -1,6 +1,7 @@
 use matrix_graph::{
     MatrixImageBuilder,
     Channel::*,
+    Neighborhood,
 };
 use std::error::Error;
 
@@ -9,5 +10,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let image = matrix
         .draw(Green)?
         .save("matrix.png")?;
+        
+    let neighborhood = matrix.get_lattice_neighborhood((50,50), 1, Neighborhood::Moore);
+    
+    println!("{:?}", neighborhood);
+    
     Ok(())
 }

@@ -10,6 +10,11 @@ pub enum Channel {
     Alpha,
 }
 
+pub enum Neighborhood {
+    VonNeumann,
+    Moore,
+}
+
 #[derive(Default, Clone, Debug)]
 pub struct MatrixImage {
     height: usize,
@@ -65,8 +70,27 @@ impl MatrixImage {
         self.data[absolute_point] = value;
         Ok(())
     }
-    pub fn get_toroidal_neighborhood(&self, point: (u32, u32)) {
-        
+    pub fn get_lattice_neighborhood(&self, point: (u32, u32), distance: usize, hood_type: Neighborhood) -> Vec<(u32, u32)> {
+        let distance = distance as i64;
+        let (point_x, point_y): (i64, i64) = (point.0 as i64, point.1 as i64);
+        let mut point_set = Vec::new();
+        match hood_type {
+            Neighborhood::VonNeumann => {
+                panic!("{}",error::MatrixError::NotImplemented);  // TODO: implement neighborhood distance for VonNeumann.
+                point_set.push(point);
+            },
+            Neighborhood::Moore => {
+                for y_diff in 0..=2*distance {
+                    for x_diff in 0..=2*distance {
+                        let x_left = (point_x-distance+x_diff) % self.width as i64;
+                        let y_left = (point_y-distance+y_diff) % self.height as i64;
+                        println!("for {x_diff} {y_diff} : Set {x_left} {y_left}");
+                        point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap())); // TODO: manage overflow error.
+                    };
+                }
+            }
+        };
+        point_set
     }
     
     pub fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>> {

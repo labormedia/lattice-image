@@ -10,6 +10,7 @@ use std::{
 #[derive(Debug)]
 pub enum MatrixError {
     Overflow,
+    NotImplemented,
 }
 
 impl Error for MatrixError {}
