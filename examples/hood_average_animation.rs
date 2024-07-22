@@ -31,7 +31,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         let _image = matrix
             .draw(Green)?
             .save(prepend+&id.to_string()+".png")?;
-
     }
     
     Ok(())

@@ -50,7 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         
 
     #[cfg(debug_assertions)]
-    println!("{:?}", neighborhood);
+    println!("{:?}", _neighborhood);
     
     Ok(())
 }
