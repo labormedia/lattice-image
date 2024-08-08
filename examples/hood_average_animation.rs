@@ -36,7 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn still_image(mut matrix: MatrixImage) -> Result<MatrixImage, Box<dyn Error>> {
+fn still_image(mut matrix: MatrixImage<u8>) -> Result<MatrixImage<u8>, Box<dyn Error>> {
     let size_x = matrix.get_height();
     let size_y = matrix.get_width();
     for point_x in 0..size_x {

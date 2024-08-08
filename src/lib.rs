@@ -2,6 +2,7 @@ use image::{RgbImage, Rgb};
 use std::error::Error;
 
 mod error;
+mod traits;
 
 pub enum Channel {
     Red,
@@ -16,36 +17,38 @@ pub enum Neighborhood {
 }
 
 #[derive(Default, Clone, Debug)]
-pub struct MatrixImage {
+pub struct MatrixImage<T>
+ where T: Clone
+{
     height: usize,
     width: usize,
-    data: Vec<u8>,
+    data: Vec<T>,
 }
 
 #[derive(Default)]
-pub struct MatrixImageBuilder {
-    template: MatrixImage,
+pub struct MatrixImageBuilder<T: Clone + Default> {
+    template: MatrixImage<T>,
 }
 
-impl MatrixImageBuilder {
+impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     pub fn init() -> Self {
-        MatrixImageBuilder::default()
+        MatrixImageBuilder::<T>::default()
     }
     pub fn with_height_and_width(mut self, height: usize, width: usize) -> Self {
         let size: usize = height*width;
-        self.template = MatrixImage {
+        self.template = MatrixImage::<T> {
                 height,
                 width,
-                data: vec![255; size].into(),
+                data: vec![T::MAX; size].into(),
             };
         self
     }
-    pub fn build(&self) -> MatrixImage {
+    pub fn build(&self) -> MatrixImage<T> {
         self.template.clone()
     }
 }
 
-impl MatrixImage {
+impl MatrixImage<u8> {
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 > self.width as u32 || point.1 > self.height as u32 { 
@@ -143,9 +146,13 @@ impl MatrixImage {
                 Channel::Blue => {
                     image.put_pixel(x, y, Rgb([0, 0, self.data[point]]));
                 },
-                _ => {}
+                _ => {} // TODO: Implement Channel::Alpha
             };
         }
         Ok(image)
     }
+}
+
+impl traits::Max for u8 {
+    const MAX: u8 = u8::MAX;
 }
