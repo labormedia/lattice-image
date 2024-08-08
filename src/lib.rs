@@ -156,3 +156,7 @@ impl MatrixImage<u8> {
 impl traits::Max for u8 {
     const MAX: u8 = u8::MAX;
 }
+
+impl traits::Max for u32 {
+    const MAX: u32 = u32::MAX;
+}
