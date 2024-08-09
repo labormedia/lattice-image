@@ -2,6 +2,7 @@ use matrix_graph::{
     MatrixImageBuilder,
     Channel::*,
     Neighborhood,
+    traits::Draw,
 };
 use std::error::Error;
 use rand::Rng;

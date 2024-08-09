@@ -3,6 +3,7 @@ use matrix_graph::{
     Channel::*,
     Neighborhood,
     MatrixImage,
+    traits::Draw,
 };
 use std::error::Error;
 use rand::Rng;

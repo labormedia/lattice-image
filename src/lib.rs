@@ -2,7 +2,7 @@ use image::{RgbImage, Rgb};
 use std::error::Error;
 
 mod error;
-mod traits;
+pub mod traits;
 
 pub enum Channel {
     Red,
@@ -48,7 +48,7 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     }
 }
 
-impl MatrixImage<u8> {
+impl<T: Clone + Default + traits::Max> MatrixImage<T> {
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 > self.width as u32 || point.1 > self.height as u32 { 
@@ -68,14 +68,14 @@ impl MatrixImage<u8> {
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    pub fn edit_point(&mut self, point: (u32, u32), value: u8) -> Result<(), Box<dyn Error>> {
+    pub fn edit_point(&mut self, point: (u32, u32), value: T) -> Result<(), Box<dyn Error>> {
         let absolute_point: usize = self.to_absolute_point(point)?;
         self.data[absolute_point] = value;
         Ok(())
     }
-    pub fn get_point_value(&self, point: (u32,u32)) -> Result<u8, Box<dyn Error>>  {
+    pub fn get_point_value(&self, point: (u32,u32)) -> Result<T, Box<dyn Error>>  {
         let absolute_point: usize = self.to_absolute_point(point)?;
-        Ok(self.data[absolute_point])
+        Ok(self.data[absolute_point].clone())
     }
     pub fn get_height(&self) -> usize {
         self.height
@@ -129,8 +129,12 @@ impl MatrixImage<u8> {
         };
         point_set
     }
-    
-    pub fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>> {
+}
+
+impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T> 
+ where u8: From<T> 
+{
+    fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>> {
         let mut image = RgbImage::new(self.width as u32, self.height as u32);
         
         for point in 0..self.data.len() {
@@ -138,13 +142,13 @@ impl MatrixImage<u8> {
             
             match color {
                 Channel::Red => {
-                    image.put_pixel(x, y, Rgb([self.data[point], 0, 0]));
+                    image.put_pixel(x, y, Rgb([self.data[point].clone().try_into()?, 0, 0]));
                 },
                 Channel::Green => {
-                    image.put_pixel(x, y, Rgb([0,self.data[point], 0]));
+                    image.put_pixel(x, y, Rgb([0,self.data[point].clone().try_into()?, 0]));
                 }
                 Channel::Blue => {
-                    image.put_pixel(x, y, Rgb([0, 0, self.data[point]]));
+                    image.put_pixel(x, y, Rgb([0, 0, self.data[point].clone().try_into()?]));
                 },
                 _ => {} // TODO: Implement Channel::Alpha
             };
