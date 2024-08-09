@@ -68,9 +68,9 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    pub fn edit_point(&mut self, point: (u32, u32), value: T) -> Result<(), Box<dyn Error>> {
+    pub fn edit_point(&mut self, point: (u32, u32), value: &T) -> Result<(), Box<dyn Error>> {
         let absolute_point: usize = self.to_absolute_point(point)?;
-        self.data[absolute_point] = value;
+        self.data[absolute_point] = value.clone();
         Ok(())
     }
     pub fn get_point_value(&self, point: (u32,u32)) -> Result<T, Box<dyn Error>>  {
@@ -140,27 +140,21 @@ impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T>
         for point in 0..self.data.len() {
             let (x,y) = self.to_2d_point(point)?;
             
+            let channel_point = u8::try_from(self.data[point].clone())?;
+            
             match color {
                 Channel::Red => {
-                    image.put_pixel(x, y, Rgb([self.data[point].clone().try_into()?, 0, 0]));
+                    image.put_pixel(x, y, Rgb( [channel_point, 0, 0]));
                 },
                 Channel::Green => {
-                    image.put_pixel(x, y, Rgb([0,self.data[point].clone().try_into()?, 0]));
+                    image.put_pixel(x, y, Rgb([0,channel_point, 0]));
                 }
                 Channel::Blue => {
-                    image.put_pixel(x, y, Rgb([0, 0, self.data[point].clone().try_into()?]));
+                    image.put_pixel(x, y, Rgb([0, 0, channel_point]));
                 },
                 _ => {} // TODO: Implement Channel::Alpha
             };
         }
         Ok(image)
     }
-}
-
-impl traits::Max for u8 {
-    const MAX: u8 = u8::MAX;
-}
-
-impl traits::Max for u32 {
-    const MAX: u32 = u32::MAX;
 }

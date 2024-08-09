@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 DEAD_VALUE
             };
             let edit_point = (point_x as u32, point_y as u32);
-            let _ = matrix.edit_point(edit_point, value);
+            let _ = matrix.edit_point(edit_point, &value);
             #[cfg(debug_assertions)]
             println!("edit_point {edit_point:?} value {value}");
         }
@@ -57,7 +57,7 @@ fn still_image(matrix: MatrixImage<u8>) -> Result<MatrixImage<u8>, Box<dyn Error
             #[cfg(debug_assertions)]
             println!("center {center:?} count_hood {count_hood}");
             let new_value = conways_ruleset(is_alive, count_hood);
-            let _ = new_matrix.edit_point(center, new_value)?;
+            let _ = new_matrix.edit_point(center, &new_value)?;
         }
     }
     Ok(new_matrix)
