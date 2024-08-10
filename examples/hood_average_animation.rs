@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         for point_y in 0..size_y {
             let value: u8 = rng.gen();
             let edit_point = (point_x as u32, point_y as u32);
-            let _ = matrix.edit_point(edit_point, &value);
+            let _ = matrix.edit_point(edit_point, value);
             #[cfg(debug_assertions)]
             println!("edit_point {edit_point:?} value {value}");
         }
@@ -55,7 +55,7 @@ fn still_image(mut matrix: MatrixImage<u8>) -> Result<MatrixImage<u8>, Box<dyn E
             let average = sum as usize / hood_size;
             #[cfg(debug_assertions)]
             println!("sum {sum} hood_size {hood_size} average {average}");
-            let _ = matrix.edit_point(center, &average.try_into()?)?;
+            let _ = matrix.edit_point(center, average.try_into()?)?;
         }
     }
     Ok(matrix)

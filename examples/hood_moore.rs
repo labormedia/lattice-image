@@ -12,10 +12,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::Moore);
     
     for point in &neighborhood {
-        let _ = matrix.edit_point(*point, &200);
+        let _ = matrix.edit_point(*point, 200);
     }
     
-    let _ = matrix.edit_point(center, &0);
+    let _ = matrix.edit_point(center, 0);
     
     let _image = matrix
         .draw(Green)?
