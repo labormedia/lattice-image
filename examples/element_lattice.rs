@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
     
     for point in &neighborhood {
-        let _ = matrix.edit_point(*point, LatticeElement(400_f32)/LatticeElement(2_f32) );
+        let _ = matrix.edit_point(*point, (400.0/2.0).into() );
     }
     
     let _ = matrix.edit_point(center, LatticeElement(0_f32));
