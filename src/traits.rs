@@ -3,7 +3,7 @@ use core::ops::{
     Div,
     Mul,
 };
-use image::RgbImage;
+use image::RgbaImage;
 use crate::Channel;
 
 pub trait Max {
@@ -11,7 +11,7 @@ pub trait Max {
 }
 
 pub trait Draw {
-    fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>>;
+    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>>;
 }
 
 impl Max for u8 {

@@ -2,7 +2,7 @@ use core::ops::{
     Div,
     Mul,
 };
-use image::{RgbImage, Rgb};
+use image::{RgbaImage, Rgba};
 use std::error::Error;
 
 mod error;
@@ -168,8 +168,8 @@ impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T>
 impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
  where u8: From<traits::LatticeElement<T>> 
 {
-    fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>> {
-        let mut image = RgbImage::new(self.width as u32, self.height as u32);
+    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
+        let mut image = RgbaImage::new(self.width as u32, self.height as u32);
         
         for point in 0..self.data.len() {
             let (x,y) = self.to_2d_point(point)?;
@@ -178,25 +178,27 @@ impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + traits::Max + From<u8>
             
             match color {
                 Channel::Red => {
-                    image.put_pixel(x, y, Rgb( [channel_point, 0, 0]));
+                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
                 },
                 Channel::Green => {
-                    image.put_pixel(x, y, Rgb([0,channel_point, 0]));
+                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
                 }
                 Channel::Blue => {
-                    image.put_pixel(x, y, Rgb([0, 0, channel_point]));
+                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
                 },
-                _ => {} // TODO: Implement Channel::Alpha
+                Channel::Alpha => {
+                    image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
+                },
             };
         }
         Ok(image)
     }
 }
 
-/// MatrixImage<u8> is implemented despite thge generic typed MatrixImage<T> because of the From<u8> trait implementation.
+/// MatrixImage<u8> is implemented despite the generic typed MatrixImage<T> because of the From<u8> trait implementation.
 impl traits::Draw for MatrixImage<u8> {
-    fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>> {
-        let mut image = RgbImage::new(self.width as u32, self.height as u32);
+    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
+        let mut image = RgbaImage::new(self.width as u32, self.height as u32);
         
         for point in 0..self.data.len() {
             let (x,y) = self.to_2d_point(point)?;
@@ -205,15 +207,17 @@ impl traits::Draw for MatrixImage<u8> {
             
             match color {
                 Channel::Red => {
-                    image.put_pixel(x, y, Rgb( [channel_point, 0, 0]));
+                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
                 },
                 Channel::Green => {
-                    image.put_pixel(x, y, Rgb([0,channel_point, 0]));
+                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
                 }
                 Channel::Blue => {
-                    image.put_pixel(x, y, Rgb([0, 0, channel_point]));
+                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
                 },
-                _ => {} // TODO: Implement Channel::Alpha
+                Channel::Alpha => {
+                    image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
+                },
             };
         }
         Ok(image)
