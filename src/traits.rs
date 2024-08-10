@@ -3,7 +3,7 @@ use core::ops::{
     Div,
     Mul,
 };
-use image::RgbImage;
+use image::RgbaImage;
 use crate::Channel;
 
 pub trait Max {
@@ -11,7 +11,7 @@ pub trait Max {
 }
 
 pub trait Draw {
-    fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>>;
+    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>>;
 }
 
 impl Max for u8 {
@@ -26,7 +26,7 @@ impl Max for f32 {
     const MAX: f32 = f32::MAX;
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct LatticeElement<T: Div + Mul>(pub T);
 
 impl<T: Div<Output = T> + Mul> Div for LatticeElement<T> {
@@ -43,21 +43,38 @@ impl<T: Div + Mul<Output=T>> Mul for LatticeElement<T> {
     }
 }
 
-impl Max for LatticeElement<f32> {
-    const MAX: Self = LatticeElement(f32::MAX);
+impl<T: Max + Div<Output=T> + Mul<Output=T> + From<u8>> Max for LatticeElement<T> {
+    const MAX: Self = LatticeElement(T::MAX);
 }
 
-
-
-impl From<LatticeElement<f32>> for u8 {
-    // type Error = Box<dyn Error>;
-    fn from(value: LatticeElement<f32>) -> Self {
-        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(f32::MAX) ) * value ).0 as u8
+impl<T: Div + Mul> From<T> for LatticeElement<T> {
+    fn from(value: T) -> Self {
+        LatticeElement(value)
     }
 }
 
 /*
+impl<T: Div<Output=T> + Mul<Output=T> + Max + From<u8>> From<LatticeElement<T>> for u8 
+ //where u8: From<LatticeElement<T>>  + From<T>
+{
+    fn from(value: LatticeElement<T>) -> Self {
+        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(T::MAX) ) * value ).0.into()
+    }
+}
+*/
 
+impl From<LatticeElement<f32>> for f32 {
+    fn from(value: LatticeElement<f32>) -> Self {
+        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(f32::MAX) ) * value ).0
+    }
+}
+
+impl From<LatticeElement<f32>> for u8 {
+    fn from(value: LatticeElement<f32>) -> Self {
+        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(f32::MAX) ) * value ).0 as u8
+    }
+}
+/*
 impl LatticeElement<f32> {
     fn trunc(self) -> Self {
         LatticeElement(self.0.trunc())

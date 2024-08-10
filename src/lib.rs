@@ -1,4 +1,8 @@
-use image::{RgbImage, Rgb};
+use core::ops::{
+    Div,
+    Mul,
+};
+use image::{RgbaImage, Rgba};
 use std::error::Error;
 
 mod error;
@@ -68,9 +72,9 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    pub fn edit_point(&mut self, point: (u32, u32), value: &T) -> Result<(), Box<dyn Error>> {
+    pub fn edit_point(&mut self, point: (u32, u32), value: T) -> Result<(), Box<dyn Error>> {
         let absolute_point: usize = self.to_absolute_point(point)?;
-        self.data[absolute_point] = value.clone();
+        self.data[absolute_point] = value.into();
         Ok(())
     }
     pub fn get_point_value(&self, point: (u32,u32)) -> Result<T, Box<dyn Error>>  {
@@ -131,6 +135,7 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
     }
 }
 
+/*
 impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T> 
  where u8: From<T> 
 {
@@ -153,6 +158,66 @@ impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T>
                     image.put_pixel(x, y, Rgb([0, 0, channel_point]));
                 },
                 _ => {} // TODO: Implement Channel::Alpha
+            };
+        }
+        Ok(image)
+    }
+}
+*/
+
+impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
+ where u8: From<traits::LatticeElement<T>> 
+{
+    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
+        let mut image = RgbaImage::new(self.width as u32, self.height as u32);
+        
+        for point in 0..self.data.len() {
+            let (x,y) = self.to_2d_point(point)?;
+            
+            let channel_point = u8::try_from(self.data[point].clone())?;
+            
+            match color {
+                Channel::Red => {
+                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
+                },
+                Channel::Green => {
+                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
+                }
+                Channel::Blue => {
+                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
+                },
+                Channel::Alpha => {
+                    image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
+                },
+            };
+        }
+        Ok(image)
+    }
+}
+
+/// MatrixImage<u8> is implemented despite the generic typed MatrixImage<T> because of the From<u8> trait implementation.
+impl traits::Draw for MatrixImage<u8> {
+    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
+        let mut image = RgbaImage::new(self.width as u32, self.height as u32);
+        
+        for point in 0..self.data.len() {
+            let (x,y) = self.to_2d_point(point)?;
+            
+            let channel_point = u8::try_from(self.data[point].clone())?;
+            
+            match color {
+                Channel::Red => {
+                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
+                },
+                Channel::Green => {
+                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
+                }
+                Channel::Blue => {
+                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
+                },
+                Channel::Alpha => {
+                    image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
+                },
             };
         }
         Ok(image)
