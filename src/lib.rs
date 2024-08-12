@@ -1,6 +1,7 @@
 use core::ops::{
     Div,
     Mul,
+    Add,
 };
 use image::{RgbaImage, Rgba};
 use std::error::Error;
@@ -72,7 +73,7 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    pub fn edit_point(&mut self, point: (u32, u32), value: T) -> Result<(), Box<dyn Error>> {
+    pub fn edit_point(&mut self, point: (u32, u32), value: impl Into<T>) -> Result<(), Box<dyn Error>> {
         let absolute_point: usize = self.to_absolute_point(point)?;
         self.data[absolute_point] = value.into();
         Ok(())
@@ -165,7 +166,7 @@ impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T>
 }
 */
 
-impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
+impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + Add<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
  where u8: From<traits::LatticeElement<T>> 
 {
     fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {

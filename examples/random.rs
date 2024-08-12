@@ -10,7 +10,7 @@ use rand::Rng;
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = rand::thread_rng();
     let (size_x, size_y) = (100,100);
-    let mut matrix = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
+    let mut matrix = MatrixImageBuilder::<u8>::init().with_height_and_width(size_x,size_y).build();
     
     for point_x in 0..size_x {
         for point_y in 0..size_y {

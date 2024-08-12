@@ -1,8 +1,12 @@
 use matrix_graph::{
+    MatrixImage,
     MatrixImageBuilder,
     Channel::*,
     Neighborhood,
-    traits::Draw,
+    traits::{
+        Draw,
+        LatticeElement,
+    }
 };
 use std::error::Error;
 use rand::Rng;
@@ -10,11 +14,11 @@ use rand::Rng;
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = rand::thread_rng();
     let (size_x, size_y) = (100,100);
-    let mut matrix = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
+    let mut matrix: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
     
     for point_x in 0..size_x {
         for point_y in 0..size_y {
-            let value: u8 = rng.gen();
+            let value = LatticeElement(rng.gen());
             let edit_point = (point_x as u32, point_y as u32);
             let _ = matrix.edit_point(edit_point, value);
             #[cfg(debug_assertions)]
@@ -26,18 +30,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         for point_y in 0..size_y {
             let center = (point_x as u32,point_y as u32);
             let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
-            let mut sum: u64 = 0;
+            let mut sum = LatticeElement(0);
             for hood_point in &neighborhood {
-                let value = matrix.get_point_value(*hood_point)? as u64;
-                sum += value;
+                let value = matrix.get_point_value(*hood_point)?;
+                sum = sum + value;
                 #[cfg(debug_assertions)]
                 println!("center {center:?} hood_point {hood_point:?} value {value} sum {sum}");
             }
-            let hood_size = neighborhood.len();
-            let average = sum as usize / hood_size;
+            let hood_size = LatticeElement(neighborhood.len() as u32);
+            let average = sum / hood_size;
             #[cfg(debug_assertions)]
             println!("sum {sum} hood_size {hood_size} average {average}");
-            let _ = matrix.edit_point(center, average.try_into()?)?;
+            let _ = matrix.edit_point(center, average)?;
         }
     }
     
