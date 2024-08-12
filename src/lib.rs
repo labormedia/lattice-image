@@ -73,13 +73,13 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    pub fn edit_point(&mut self, point: (u32, u32), value: impl Into<T>) -> Result<(), Box<dyn Error>> {
-        let absolute_point: usize = self.to_absolute_point(point)?;
+    pub fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), Box<dyn Error>> {
+        let absolute_point: usize = self.to_absolute_point((point.0.into(), point.1.into()))?;
         self.data[absolute_point] = value.into();
         Ok(())
     }
-    pub fn get_point_value(&self, point: (u32,u32)) -> Result<T, Box<dyn Error>>  {
-        let absolute_point: usize = self.to_absolute_point(point)?;
+    pub fn get_point_value<U: Into<u32>>(&self, point: (U,U)) -> Result<T, Box<dyn Error>>  {
+        let absolute_point: usize = self.to_absolute_point((point.0.into(), point.1.into()))?;
         Ok(self.data[absolute_point].clone())
     }
     pub fn get_height(&self) -> usize {
@@ -88,9 +88,9 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
     pub fn get_width(&self) -> usize {
         self.width
     }
-    pub fn get_lattice_neighborhood(&self, point: (u32, u32), distance: usize, hood_type: Neighborhood) -> Vec<(u32, u32)> {
+    pub fn get_lattice_neighborhood<U: Into<i64>>(&self, point: (U, U), distance: usize, hood_type: Neighborhood) -> Vec<(u32, u32)> {
         let distance = distance as i64;
-        let (point_x, point_y): (i64, i64) = (point.0 as i64, point.1 as i64);
+        let (point_x, point_y): (i64, i64) = (point.0.into() as i64, point.1.into() as i64);
         let mut point_set = Vec::new();
         match hood_type {
             Neighborhood::VonNeumann => {

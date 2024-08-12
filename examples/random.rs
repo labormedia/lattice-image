@@ -9,7 +9,7 @@ use rand::Rng;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = rand::thread_rng();
-    let (size_x, size_y) = (100,100);
+    let (size_x, size_y): (usize, usize) = (100,100);
     let mut matrix = MatrixImageBuilder::<u8>::init().with_height_and_width(size_x,size_y).build();
     
     for point_x in 0..size_x {
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     
-    let center = (50,50);
+    let center: (u32, u32) = (50,50);
     let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
     
     for point in &neighborhood {

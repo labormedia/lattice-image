@@ -61,16 +61,6 @@ impl<T: Div + Mul + Add> From<T> for LatticeElement<T> {
     }
 }
 
-/*
-impl<T: Div<Output=T> + Mul<Output=T> + Max + From<u8>> From<LatticeElement<T>> for u8 
- //where u8: From<LatticeElement<T>>  + From<T>
-{
-    fn from(value: LatticeElement<T>) -> Self {
-        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(T::MAX) ) * value ).0.into()
-    }
-}
-*/
-
 impl From<LatticeElement<f32>> for f32 {
     fn from(value: LatticeElement<f32>) -> Self {
         ( ( LatticeElement(u8::MAX.into()) / LatticeElement(f32::MAX) ) * value ).0
@@ -100,16 +90,3 @@ impl From<LatticeElement<u8>> for u8 {
         value.0
     }
 }
-/*
-impl LatticeElement<f32> {
-    fn trunc(self) -> Self {
-        LatticeElement(self.0.trunc())
-    }
-}
-
-impl<T: Div<Output=T> + Mul<Output=T> + Max + From<u8>> From<LatticeElement<T>> for u8 {
-    fn from(value: LatticeElement<T>) -> Self {
-        u8::TryFrom( ( LatticeElement(u8::MAX.into() ) / LatticeElement(T::MAX) ) * value ) 
-    }
-}
-*/
