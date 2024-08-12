@@ -90,8 +90,8 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
     }
     pub fn get_lattice_neighborhood<U: Into<i64>>(&self, point: (U, U), distance: usize, hood_type: Neighborhood) -> Vec<(u32, u32)> {
         let distance = distance as i64;
-        let (point_x, point_y): (i64, i64) = (point.0.into() as i64, point.1.into() as i64);
-        let mut point_set = Vec::new();
+        let (point_x, point_y): (i64, i64) = (point.0.into(), point.1.into());
+        let mut point_set = Vec::<(u32,u32)>::new();
         match hood_type {
             Neighborhood::VonNeumann => {
                 
@@ -109,9 +109,9 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
                         if y_right < 0 {
                             y_right = self.height as i64 + y_left;
                         }
-                        point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap()));
+                        point_set.push((x_left.try_into().expect("Assumes boundary checks."), y_left.try_into().expect("Assumes boundary checks.")));
                         if y_left != y_right {
-                            point_set.push((x_left.try_into().unwrap(), y_right.try_into().unwrap())); 
+                            point_set.push((x_left.try_into().expect("Assumes boundary checks."), y_right.try_into().expect("Assumes boundary checks."))); 
                         }
                     };
                 }
