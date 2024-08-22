@@ -2,6 +2,7 @@ use core::ops::{
     Div,
     Mul,
     Add,
+    Sub,
 };
 use image::{RgbaImage, Rgba};
 use std::error::Error;
@@ -53,7 +54,7 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     }
 }
 
-impl<T: Clone + Default + traits::Max> MatrixImage<T> {
+impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixImage<T> {
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 > self.width as u32 || point.1 > self.height as u32 { 
@@ -134,6 +135,30 @@ impl<T: Clone + Default + traits::Max> MatrixImage<T> {
         };
         point_set
     }
+    /// T is not bounded to a generic zero value, but to a Default trait implementation,
+    /// which is conveniently used to create the sum accumulator later then substracted,
+    /// whatever this default value would be.
+    /// The returned value is a Tuple with the sum and the length of the neighborhood evaluated.
+    pub fn hood_sum(&self, point: (u32, u32), size: usize) -> Result<(T, usize), Box<dyn Error>> {
+        let neighborhood = self.get_lattice_neighborhood(point, size, Neighborhood::VonNeumann);
+        let mut sum = T::default();  // initial value which is substracted afterwards.
+        for hood_point in &neighborhood {
+            let value = self.get_point_value(*hood_point)?;
+            sum = sum + value;
+        };
+        Ok(( sum - T::default(), neighborhood.len() ))
+    }
+    /// Evaluates the Discrete Laplace Operator for the given point coordinates and the size of the neighborhood.
+    /// Given that the Neighborhood includes the value of the point being evaluated, we need to substract it from
+    /// the neighborhood summation too.
+    pub fn laplace_operator(&self, point: (u32, u32), size: usize) -> Result<T, Box<dyn Error>> {
+        let value = self.get_point_value(point)?;
+        let (mut accumulator, length) = self.hood_sum(point, size)?;
+        for _ in 0..length {
+            accumulator = accumulator - value.clone()
+        }
+        Ok(accumulator)
+    }
 }
 
 /*
@@ -166,7 +191,7 @@ impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T>
 }
 */
 
-impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + Add<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
+impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
  where u8: From<traits::LatticeElement<T>> 
 {
     fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {

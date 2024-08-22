@@ -3,6 +3,7 @@ use core::ops::{
     Div,
     Mul,
     Add,
+    Sub,
 };
 use image::RgbaImage;
 use crate::Channel;
@@ -30,24 +31,31 @@ impl Max for f32 {
 #[derive(Default, Clone, Debug)]
 pub struct LatticeElement<T: Div + Mul + Add>(pub T);
 
-impl<T: Div<Output = T> + Mul + Add> Div for LatticeElement<T> {
+impl<T: Div<Output = T> + Mul + Add + Sub> Div for LatticeElement<T> {
     type Output = Self;
     fn div(self, value: Self) -> Self {
         Self(self.0 / value.0)
     }
 }
 
-impl<T: Div + Mul<Output=T> + Add> Mul for LatticeElement<T> {
+impl<T: Div + Mul<Output=T> + Add + Sub> Mul for LatticeElement<T> {
     type Output = Self;
     fn mul(self, value: Self) -> Self {
         Self(self.0 * value.0)
     }
 }
 
-impl<T: Div + Mul + Add<Output=T>> Add for LatticeElement<T> {
+impl<T: Div + Mul + Add<Output=T> + Sub> Add for LatticeElement<T> {
     type Output = Self;
     fn add(self, value: Self) -> Self {
         Self(self.0 + value.0)
+    }
+}
+
+impl<T: Div + Mul + Add + Sub<Output=T>> Sub for LatticeElement<T> {
+    type Output = Self;
+    fn sub(self, value: Self) -> Self {
+        Self(self.0 - value.0)
     }
 }
 
