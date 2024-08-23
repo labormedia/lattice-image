@@ -4,11 +4,15 @@ use core::ops::{
     Add,
     Sub,
 };
-use image::{RgbaImage, Rgba};
 use std::error::Error;
 
 mod error;
 pub mod traits;
+
+use traits::{
+    Draw,
+    Max,
+};
 
 pub enum Channel {
     Red,
@@ -139,8 +143,8 @@ impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixIma
     /// which is conveniently used to create the sum accumulator later then substracted,
     /// whatever this default value would be.
     /// The returned value is a Tuple with the sum and the length of the neighborhood evaluated.
-    pub fn hood_sum(&self, point: (u32, u32), size: usize) -> Result<(T, usize), Box<dyn Error>> {
-        let neighborhood = self.get_lattice_neighborhood(point, size, Neighborhood::VonNeumann);
+    pub fn hood_sum(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<(T, usize), Box<dyn Error>> {
+        let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
         for hood_point in &neighborhood {
             let value = self.get_point_value(*hood_point)?;
@@ -151,9 +155,9 @@ impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixIma
     /// Evaluates the Discrete Laplace Operator for the given point coordinates and the size of the neighborhood.
     /// Given that the Neighborhood includes the value of the point being evaluated, we need to substract it from
     /// the neighborhood summation too.
-    pub fn laplace_operator(&self, point: (u32, u32), size: usize) -> Result<T, Box<dyn Error>> {
+    pub fn laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn Error>> {
         let value = self.get_point_value(point)?;
-        let (mut accumulator, length) = self.hood_sum(point, size)?;
+        let (mut accumulator, length) = self.hood_sum(point, size, hood_type)?;
         for _ in 0..length {
             accumulator = accumulator - value.clone()
         }
@@ -161,91 +165,18 @@ impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixIma
     }
 }
 
-/*
-impl<T: Clone + Default + traits::Max> traits::Draw for MatrixImage<T> 
- where u8: From<T> 
-{
-    fn draw(&mut self, color: Channel) -> Result<RgbImage, Box<dyn Error>> {
-        let mut image = RgbImage::new(self.width as u32, self.height as u32);
-        
-        for point in 0..self.data.len() {
-            let (x,y) = self.to_2d_point(point)?;
-            
-            let channel_point = u8::try_from(self.data[point].clone())?;
-            
-            match color {
-                Channel::Red => {
-                    image.put_pixel(x, y, Rgb( [channel_point, 0, 0]));
-                },
-                Channel::Green => {
-                    image.put_pixel(x, y, Rgb([0,channel_point, 0]));
-                }
-                Channel::Blue => {
-                    image.put_pixel(x, y, Rgb([0, 0, channel_point]));
-                },
-                _ => {} // TODO: Implement Channel::Alpha
-            };
-        }
-        Ok(image)
+impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8>> Draw<T> for MatrixImage<T> 
+ where u8: From<T> {
+    fn get_width(&self) -> usize {
+        self.width    
     }
-}
-*/
-
-impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8>> traits::Draw for MatrixImage<traits::LatticeElement<T>> 
- where u8: From<traits::LatticeElement<T>> 
-{
-    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
-        let mut image = RgbaImage::new(self.width as u32, self.height as u32);
-        
-        for point in 0..self.data.len() {
-            let (x,y) = self.to_2d_point(point)?;
-            
-            let channel_point = u8::try_from(self.data[point].clone())?;
-            
-            match color {
-                Channel::Red => {
-                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
-                },
-                Channel::Green => {
-                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
-                }
-                Channel::Blue => {
-                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
-                },
-                Channel::Alpha => {
-                    image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
-                },
-            };
-        }
-        Ok(image)
+    fn get_height(&self) -> usize {
+        self.height
     }
-}
-
-/// MatrixImage<u8> is implemented despite the generic typed MatrixImage<T> because of the From<u8> trait implementation.
-impl traits::Draw for MatrixImage<u8> {
-    fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
-        let mut image = RgbaImage::new(self.width as u32, self.height as u32);
-        
-        for point in 0..self.data.len() {
-            let (x,y) = self.to_2d_point(point)?;
-            
-            let channel_point = u8::try_from(self.data[point].clone())?;
-            
-            match color {
-                Channel::Red => {
-                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
-                },
-                Channel::Green => {
-                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
-                }
-                Channel::Blue => {
-                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
-                },
-                Channel::Alpha => {
-                    image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
-                },
-            };
-        }
-        Ok(image)
+    fn to_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>> {
+        self.to_2d_point(point)
+    }
+    fn get_data_point(&self, point: usize) -> T {
+        self.data[point].clone()
     }
 }

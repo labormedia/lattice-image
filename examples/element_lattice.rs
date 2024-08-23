@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let _ = matrix.edit_point(center, LatticeElement(0_f32));
     
     let _image = matrix
-        .draw(Alpha)?
+        .draw(Blue)?
         .save("matrix.png")?;
         
 

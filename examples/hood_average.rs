@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     
     let center: (u32, u32) = (50,50);
     let _neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);
-    let _ = matrix.edit_point(center, 0);
+    let _ = matrix.edit_point(center, 0_u32);
     
     let _image = matrix
         .draw(Green)?
