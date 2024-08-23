@@ -38,7 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let prepend = "./animation/matrix_".to_owned();
     
         let _image = matrix
-            .draw(Green)?
+            .draw(Blue)?
             .save(prepend+&id.to_string()+".png")?;
         
         matrix = reaction_diffusion(matrix.clone())?;
