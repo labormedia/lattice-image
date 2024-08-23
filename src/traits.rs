@@ -27,8 +27,7 @@ pub trait Draw<T: Debug> where u8: From<T> {
         for point in 0..(usize::from(self.get_width()*self.get_height())) {
             let (x,y) = self.to_2d_point(point)?;
             let data_point = self.get_data_point(point);
-            println!("data point {:?}", data_point);
-            let channel_point = u8::try_from(LatticeElement(200_u32))?;
+            let channel_point = u8::try_from(data_point)?;
             
             match color {
                 Channel::Red => {
@@ -116,13 +115,14 @@ impl From<LatticeElement<u32>> for u32 {
 
 impl From<LatticeElement<f32>> for u8 {
     fn from(value: LatticeElement<f32>) -> Self {
-        (value.0  / f32::MAX) as u8 * u8::MAX
+        let result = ((value.0  / f32::MAX) * (u8::MAX as f32)) as u8;
+        result
     }
 }
 
 impl From<LatticeElement<u32>> for u8 {
     fn from(value: LatticeElement<u32>) -> Self {
-        (value.0  / u32::MAX) as u8 * u8::MAX
+        ((value.0  / u32::MAX) * u8::MAX as u32) as u8
     }
 }
 
