@@ -14,17 +14,17 @@ const DEAD_VALUE: u8 = 0;
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = rand::thread_rng();
     let n_sequence = 100;
-    let (size_x, size_y) = (100,100);
+    let (size_x, size_y): (usize, usize) = (100,100);
     let mut matrix = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
     
-    for point_x in 0..size_x {
-        for point_y in 0..size_y {
+    for point_x in 0..(size_x as u32) {
+        for point_y in 0..(size_y as u32) {
             let value: u8 = if rng.gen::<u8>() > 128 {
                 ALIVE_VALUE
             } else {
                 DEAD_VALUE
             };
-            let edit_point = (point_x as u32, point_y as u32);
+            let edit_point = (point_x, point_y);
             let _ = matrix.edit_point(edit_point, value);
             #[cfg(debug_assertions)]
             println!("edit_point {edit_point:?} value {value}");
