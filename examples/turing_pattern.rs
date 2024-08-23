@@ -16,7 +16,7 @@ use rand::{
 
 fn main() -> Result<(), Box<dyn Error>> {
     let n_sequence = 100;
-    let (size_x, size_y) = (100,100);
+    let (size_x, size_y) = (1000,1000);
     let mut matrixU: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
     let mut matrixV: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init().with_height_and_width(size_x,size_y).build();
     
@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .with_height_and_width(size_x,size_y)
         .build();
     
-    let center: (u32,u32) = (50,50);
+    let center: (u32,u32) = (500,500);
     let neighborhood = matrix.get_lattice_neighborhood(center, 10, Neighborhood::Moore);
     
     for point in &neighborhood {
@@ -70,7 +70,7 @@ fn reaction_diffusion(mut matrix: MatrixImage<LatticeElement<u32>>) -> Result<Ma
     for point_x in 0..size_x {
         for point_y in 0..size_y {
             let center = (point_x as u32,point_y as u32);
-            let new_value = matrix.laplace_operator(center, 1, Neighborhood::VonNeumann)?;
+            let new_value = matrix.laplace_operator(center, 10, Neighborhood::VonNeumann)?;
             let _ = new_matrix.edit_point(center, new_value)?;
         }
     }

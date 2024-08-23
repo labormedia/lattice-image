@@ -15,10 +15,11 @@ use traits::{
     Max,
 };
 
+#[derive(Eq, Ord, PartialOrd, PartialEq)]
 pub enum Channel {
     Red,
-    Blue,
     Green,
+    Blue,
     Alpha,
 }
 
@@ -27,7 +28,7 @@ pub enum Neighborhood {
     Moore,
 }
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, PartialEq)]
 pub struct MatrixImage<T>
  where T: Clone
 {
@@ -173,7 +174,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     }
 }
 
-impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8>> Draw<T> for MatrixImage<T> 
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8> + PartialEq> Draw<T> for MatrixImage<T> 
  where u8: From<T> {
     fn get_width(&self) -> usize {
         self.width    
