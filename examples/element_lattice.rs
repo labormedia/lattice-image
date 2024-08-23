@@ -27,6 +27,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let center: Point = (50,50);
     let _neighborhood = matrix.get_lattice_neighborhood(center, 6, Neighborhood::VonNeumann);
+    #[cfg(debug_assertions)]
+    println!("{:?}", _neighborhood);
     
     let _ = matrix.edit_point(center, LatticeElement(0_f32));
     
@@ -34,8 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .draw(Blue)?
         .save("matrix.png")?;
 
-    #[cfg(debug_assertions)]
-    println!("{:?}", _neighborhood);
+
     
     Ok(())
 }

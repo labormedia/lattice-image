@@ -31,13 +31,13 @@ pub trait Draw<T: Debug> where u8: From<T> {
             
             match color {
                 Channel::Red => {
-                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 1]));
+                    image.put_pixel(x, y, Rgba( [channel_point, 0, 0, 255]));
                 },
                 Channel::Green => {
-                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 1]));
+                    image.put_pixel(x, y, Rgba([0,channel_point, 0, 255]));
                 }
                 Channel::Blue => {
-                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 1]));
+                    image.put_pixel(x, y, Rgba([0, 0, channel_point, 255]));
                 },
                 Channel::Alpha => {
                     image.put_pixel(x, y, Rgba([0, 0, 0, channel_point]));
