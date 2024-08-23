@@ -16,7 +16,7 @@ pub trait Max {
     const MAX: Self;
 }
 
-pub trait Draw<T: Debug> where u8: From<T> {
+pub trait Draw<T: Debug +  Clone> where u8: From<T> {
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     fn get_data_point(&self, point: usize) -> T;
@@ -27,7 +27,7 @@ pub trait Draw<T: Debug> where u8: From<T> {
         for point in 0..(usize::from(self.get_width()*self.get_height())) {
             let (x,y) = self.to_2d_point(point)?;
             let data_point = self.get_data_point(point);
-            let channel_point = u8::try_from(data_point)?;
+            let channel_point = u8::try_from(data_point.clone())?;
             
             match color {
                 Channel::Red => {
@@ -122,7 +122,7 @@ impl From<LatticeElement<f32>> for u8 {
 
 impl From<LatticeElement<u32>> for u8 {
     fn from(value: LatticeElement<u32>) -> Self {
-        ((value.0  / u32::MAX) * u8::MAX as u32) as u8
+        ((value.0 as f32 / u32::MAX as f32) * u8::MAX as f32) as u8
     }
 }
 

@@ -37,21 +37,26 @@ pub struct MatrixImage<T>
 }
 
 #[derive(Default)]
-pub struct MatrixImageBuilder<T: Clone + Default> {
+pub struct MatrixImageBuilder<T: Clone + Default + traits::Max> {
+    initial_value: T,
     template: MatrixImage<T>,
 }
 
 impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     pub fn init() -> Self {
-        MatrixImageBuilder::<T>::default()
+        MatrixImageBuilder::<T>::default().with_initial_value(T::MAX)
     }
     pub fn with_height_and_width(mut self, height: usize, width: usize) -> Self {
         let size: usize = height*width;
         self.template = MatrixImage::<T> {
                 height,
                 width,
-                data: vec![T::MAX; size].into(),
+                data: vec![self.initial_value.clone(); size].into(),
             };
+        self
+    }
+    pub fn with_initial_value(mut self, value: T) -> Self {
+        self.initial_value = value;
         self
     }
     pub fn build(&self) -> MatrixImage<T> {
@@ -59,7 +64,7 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     }
 }
 
-impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixImage<T> {
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T>> MatrixImage<T> {
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 > self.width as u32 || point.1 > self.height as u32 { 
@@ -157,12 +162,14 @@ impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixIma
     /// Given that the Neighborhood includes the value of the point being evaluated, we need to substract it from
     /// the neighborhood summation too.
     pub fn laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn Error>> {
-        let value = self.get_point_value(point)?;
-        let (mut accumulator, length) = self.hood_sum(point, size, hood_type)?;
-        for _ in 0..length {
-            accumulator = accumulator - value.clone()
-        }
-        Ok(accumulator)
+        let point_value = self.get_point_value(point)?;
+        let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
+        let mut sum = T::default();  // initial value which is substracted afterwards.
+        for hood_point in &neighborhood {
+            let hood_point_value = self.get_point_value(*hood_point)?;
+            sum = sum + hood_point_value - point_value.clone();
+        };
+        Ok(sum - T::default())
     }
 }
 
