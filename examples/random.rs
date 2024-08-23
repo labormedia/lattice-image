@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let _ = matrix.edit_point(center, 0);
     
     let _image = matrix
-        .draw(Alpha)?
+        .draw(Blue)?
         .save("matrix.png")?;
         
 
