@@ -1,4 +1,5 @@
 use std::error::Error;
+use core::fmt::Debug;
 use core::ops::{
     Div,
     Mul,
@@ -15,18 +16,19 @@ pub trait Max {
     const MAX: Self;
 }
 
-pub trait Draw<T> where u8: From<T> {
+pub trait Draw<T: Debug> where u8: From<T> {
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     fn get_data_point(&self, point: usize) -> T;
     fn to_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>>;
     fn draw(&mut self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
-        let mut image = RgbaImage::new(self.get_width() as u32, self.get_height() as u32);
+        let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
-        for point in 0..((self.get_width()*self.get_height()) as usize) {
+        for point in 0..(usize::from(self.get_width()*self.get_height())) {
             let (x,y) = self.to_2d_point(point)?;
-            
-            let channel_point = u8::try_from(self.get_data_point(point))?;
+            let data_point = self.get_data_point(point);
+            println!("data point {:?}", data_point);
+            let channel_point = u8::try_from(LatticeElement(200_u32))?;
             
             match color {
                 Channel::Red => {
@@ -102,25 +104,25 @@ impl<T: Div + Mul + Add> From<T> for LatticeElement<T> {
 
 impl From<LatticeElement<f32>> for f32 {
     fn from(value: LatticeElement<f32>) -> Self {
-        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(f32::MAX) ) * value ).0
+       value.0
     }
 }
 
 impl From<LatticeElement<u32>> for u32 {
     fn from(value: LatticeElement<u32>) -> Self {
-        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(u32::MAX) ) * value ).0
+        value.0
     }
 }
 
 impl From<LatticeElement<f32>> for u8 {
     fn from(value: LatticeElement<f32>) -> Self {
-        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(f32::MAX) ) * value ).0 as u8
+        (value.0  / f32::MAX) as u8 * u8::MAX
     }
 }
 
 impl From<LatticeElement<u32>> for u8 {
     fn from(value: LatticeElement<u32>) -> Self {
-        ( ( LatticeElement(u8::MAX.into()) / LatticeElement(u32::MAX) ) * value ).0 as u8
+        (value.0  / u32::MAX) as u8 * u8::MAX
     }
 }
 

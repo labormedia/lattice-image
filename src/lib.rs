@@ -1,3 +1,4 @@
+use core::fmt::Debug;
 use core::ops::{
     Div,
     Mul,
@@ -165,7 +166,7 @@ impl<T: Clone + Default + traits::Max + Add<Output=T> + Sub<Output=T>> MatrixIma
     }
 }
 
-impl<T: Clone + Default + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8>> Draw<T> for MatrixImage<T> 
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8>> Draw<T> for MatrixImage<T> 
  where u8: From<T> {
     fn get_width(&self) -> usize {
         self.width    

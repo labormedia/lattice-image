@@ -31,9 +31,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let _image = matrix
         .draw(Blue)?
         .save("matrix.png")?;
-        
 
-    
+    #[cfg(debug_assertions)]
     println!("{:?}", neighborhood);
     
     Ok(())
