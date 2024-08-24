@@ -37,6 +37,15 @@ pub struct MatrixImage<T>
     data: Vec<T>,
 }
 
+impl<T: Mul<Output=T> + Clone> Mul for MatrixImage<T> {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        let mut new_matrix = self.clone();
+        new_matrix.data = new_matrix.data.into_iter().enumerate().map(|(i, value)| { value * rhs.data[i].clone() }).collect();
+        new_matrix
+    }
+}
+
 #[derive(Default)]
 pub struct MatrixImageBuilder<T: Clone + Default + traits::Max> {
     initial_value: T,

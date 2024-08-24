@@ -1,7 +1,6 @@
 use matrix_graph::{
     MatrixImage,
     MatrixImageBuilder,
-    Channel::*,
     Neighborhood,
     traits::{
         Draw,
@@ -9,51 +8,6 @@ use matrix_graph::{
     },
 };
 use std::error::Error;
-use rand::{
-    self,
-    Rng
-};
-
-fn main() -> Result<(), Box<dyn Error>> {
-    let n_sequence = 100;
-    let (size_x, size_y) = (100,100);
-    let mut matrixU: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init()
-        .with_initial_value(LatticeElement::from(u32::MAX - 1_u32))
-        .with_height_and_width(size_x,size_y)
-        .build();
-    let mut matrixV: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init()
-        .with_initial_value(LatticeElement::from(u32::MAX - 1_u32))
-        .with_height_and_width(size_x,size_y)
-        .build();
-    
-    //let mut matrix = randomize_matrix(&mut matrixU, u32::MAX);
-    
-    let centerU: (u32,u32) = (40,55);
-    let centerV: (u32,u32) = (60,45);
-    let neighborhoodU = matrixU.get_lattice_neighborhood(centerU, 10, Neighborhood::Moore);
-    let neighborhoodV = matrixU.get_lattice_neighborhood(centerV, 10, Neighborhood::Moore);
-    
-    for point in &neighborhoodU {
-        let _ = matrixU.edit_point(*point, u32::MAX/16_u32);
-    }
-    for point in &neighborhoodV {
-        let _ = matrixV.edit_point(*point, u32::MAX/16_u32);
-    }
-    
-    for id in 0..n_sequence {
-        
-        let prepend = "./animation/matrix_".to_owned();
-    
-        let _image = matrixU
-            .draw_multi_channel(&[Some(matrixU.clone()), None, Some(matrixV.clone()), None], None)?
-            .save(prepend+&id.to_string()+".png")?;
-        
-        matrixU = reaction_diffusion(matrixU)?;
-        matrixV = reaction_diffusion(matrixV)?;
-    }
-    
-    Ok(())
-}
 
 /// Struct for the parameter coefficients of the model.
 struct Coefficients {
@@ -71,30 +25,81 @@ struct Coefficients {
     Dv: f32,
 }
 
-fn reaction_diffusion(mut matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, Box<dyn Error>> {
-    let size_x = matrix.get_height();
-    let size_y = matrix.get_width();
-    let mut new_matrix = matrix.clone();
-    for point_x in 0..size_x {
-        for point_y in 0..size_y {
-            let center = (point_x as u32,point_y as u32);
-            let new_value = matrix.laplace_operator(center, 10, Neighborhood::VonNeumann)?;
-            let _ = new_matrix.edit_point(center, new_value)?;
-        }
+fn main() -> Result<(), Box<dyn Error>> {
+    let n_sequence = 500;
+    let (size_x, size_y) = (100,100);
+    let mut matrixU: MatrixImage<LatticeElement<f32>> = MatrixImageBuilder::init()
+        .with_initial_value(LatticeElement::from(1_f32))
+        .with_height_and_width(size_x,size_y)
+        .build();
+    let mut matrixV: MatrixImage<LatticeElement<f32>> = MatrixImageBuilder::init()
+        .with_initial_value(LatticeElement::from(0_f32))
+        .with_height_and_width(size_x,size_y)
+        .build();
+    let values_MAX: MatrixImage<LatticeElement<f32>> = MatrixImageBuilder::init()
+        .with_initial_value(LatticeElement::from(f32::MAX))
+        .with_height_and_width(size_x,size_y)
+        .build();
+    
+    let coefficients = Coefficients {
+        width: size_x as f32,
+        height: size_y as f32,
+        F: 0.0140,
+        k: 0.0540,
+        Du: 0.2097,
+        Dv: 0.1050,
+    };
+    
+    let centerU: (u32,u32) = (50,50);//(40,55);
+    let centerV: (u32,u32) = (50,50);//(60,45);
+    let neighborhoodU = matrixU.get_lattice_neighborhood(centerU, 10, Neighborhood::Moore);
+    let neighborhoodV = matrixV.get_lattice_neighborhood(centerV, 10, Neighborhood::Moore);
+    
+    for point in &neighborhoodU {
+        let _ = matrixU.edit_point(*point, 0.5_f32);
     }
-    Ok(new_matrix)
+    for point in &neighborhoodV {
+        let _ = matrixV.edit_point(*point, 0.25_f32);
+    }
+    
+    for id in 0..n_sequence {
+        
+        let prepend = "./animation/matrix_".to_owned();
+        
+        let matrix_to_drawU = matrixU.clone()*values_MAX.clone();
+        let matrix_to_drawV = matrixV.clone()*values_MAX.clone();
+    
+        let _image = matrixU
+            .draw_multi_channel(&[Some(matrix_to_drawU), None, Some(matrix_to_drawV), None], None)?
+            .save(prepend+&id.to_string()+".png")?;
+        
+        (matrixU, matrixV) = reaction_diffusion(matrixU, matrixV, &coefficients)?;
+    }
+    
+    Ok(())
 }
 
-fn randomize_matrix(matrix: &mut MatrixImage<LatticeElement<u32>>, max_value: u32) -> MatrixImage<LatticeElement<u32>> {
-    let mut rng = rand::thread_rng();
-    let size_x = matrix.get_height();
-    let size_y = matrix.get_width();
-    for point_x in 0..size_x {
-    for point_y in 0..size_y {
-            let value: LatticeElement<u32> = LatticeElement(rng.gen_range(0_u32..(max_value)));
-            let edit_point = (point_x as u32, point_y as u32);
-            let _ = matrix.edit_point(edit_point, value);
+fn reaction_diffusion(
+    matrixU: MatrixImage<LatticeElement<f32>>, 
+    matrixV: MatrixImage<LatticeElement<f32>>,
+    c: &Coefficients,
+    ) -> Result<(MatrixImage<LatticeElement<f32>>, MatrixImage<LatticeElement<f32>>), Box<dyn Error>> {
+    //let size_x = matrixU.get_width();
+    //let size_y = matrixU.get_height();
+    let mut new_matrixU = matrixU.clone();
+    let mut new_matrixV = matrixV.clone();
+    for point_x in 0..c.width as u32 {
+        for point_y in 0..c.height as u32 {
+            let center = (point_x as u32,point_y as u32);
+            let Upoint: f32 = matrixU.get_point_value(center)?.into();
+            let lapU: f32 = matrixU.laplace_operator(center, 1, Neighborhood::VonNeumann)?.into();
+            let Vpoint: f32 = matrixV.get_point_value(center)?.into();
+            let lapV: f32 = matrixV.laplace_operator(center, 1, Neighborhood::VonNeumann)?.into();
+            let dU = (c.Du * lapU) - (Upoint * Vpoint * Vpoint) + (c.F * (1.0 - Upoint) );
+            let dV = (c.Dv * lapV) + (Upoint * Vpoint * Vpoint) - ((c.F + c.k) * Vpoint);
+            let _ = new_matrixU.edit_point(center, Upoint + dU)?;
+            let _ = new_matrixV.edit_point(center, Vpoint + dV)?;
         }
     }
-    matrix.clone()
+    Ok((new_matrixU, new_matrixV))
 }

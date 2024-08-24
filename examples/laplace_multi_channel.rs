@@ -1,7 +1,6 @@
 use matrix_graph::{
     MatrixImage,
     MatrixImageBuilder,
-    Channel::*,
     Neighborhood,
     traits::{
         Draw,
@@ -9,10 +8,6 @@ use matrix_graph::{
     },
 };
 use std::error::Error;
-use rand::{
-    self,
-    Rng
-};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let n_sequence = 100;
@@ -31,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let centerU: (u32,u32) = (40,55);
     let centerV: (u32,u32) = (60,45);
     let neighborhoodU = matrixU.get_lattice_neighborhood(centerU, 10, Neighborhood::Moore);
-    let neighborhoodV = matrixU.get_lattice_neighborhood(centerV, 10, Neighborhood::Moore);
+    let neighborhoodV = matrixV.get_lattice_neighborhood(centerV, 10, Neighborhood::Moore);
     
     for point in &neighborhoodU {
         let _ = matrixU.edit_point(*point, u32::MAX/16_u32);
@@ -55,23 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// Struct for the parameter coefficients of the model.
-struct Coefficients {
-    /// Width of the model lattice.
-    width: f32,
-    /// Height of the model lattice.
-    height: f32,
-    /// Feed rate.
-    F: f32,
-    /// Kill rate.
-    k: f32,
-    /// Diffusion coefficient for U.
-    Du: f32,
-    /// Diffusion coefficient for V.
-    Dv: f32,
-}
-
-fn reaction_diffusion(mut matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, Box<dyn Error>> {
+fn reaction_diffusion(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, Box<dyn Error>> {
     let size_x = matrix.get_height();
     let size_y = matrix.get_width();
     let mut new_matrix = matrix.clone();
@@ -83,18 +62,4 @@ fn reaction_diffusion(mut matrix: MatrixImage<LatticeElement<u32>>) -> Result<Ma
         }
     }
     Ok(new_matrix)
-}
-
-fn randomize_matrix(matrix: &mut MatrixImage<LatticeElement<u32>>, max_value: u32) -> MatrixImage<LatticeElement<u32>> {
-    let mut rng = rand::thread_rng();
-    let size_x = matrix.get_height();
-    let size_y = matrix.get_width();
-    for point_x in 0..size_x {
-    for point_y in 0..size_y {
-            let value: LatticeElement<u32> = LatticeElement(rng.gen_range(0_u32..(max_value)));
-            let edit_point = (point_x as u32, point_y as u32);
-            let _ = matrix.edit_point(edit_point, value);
-        }
-    }
-    matrix.clone()
 }
