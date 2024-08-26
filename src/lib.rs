@@ -61,7 +61,7 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
         self.template = MatrixImage::<T> {
                 height,
                 width,
-                data: vec![self.initial_value.clone(); size].into(),
+                data: vec![self.initial_value.clone(); size],
             };
         self
     }
@@ -78,7 +78,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 > self.width as u32 || point.1 > self.height as u32 { 
-            return Err(Box::new(error::MatrixError::Overflow)); 
+            Err(Box::new(error::MatrixError::Overflow))
         } else {
             Ok(true)
         }
@@ -122,13 +122,13 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                         let mut y_left = (point_y-distance+y_diff) % self.height as i64;
                         let mut y_right = (point_y+(distance-y_diff)) % self.height as i64;
                         if x_left < 0 {
-                            x_left = self.width as i64 + x_left;
+                            x_left += self.width as i64;
                         }
                         if y_left < 0 {
-                            y_left = self.height as i64 + y_left;
+                            y_left += self.height as i64;
                         }
                         if y_right < 0 {
-                            y_right = self.height as i64 + y_left;
+                            y_right += self.height as i64;
                         }
                         point_set.push((x_left.try_into().expect("Assumes boundary checks."), y_left.try_into().expect("Assumes boundary checks.")));
                         if y_left != y_right {
@@ -143,10 +143,10 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                         let mut x_left = (point_x-distance+x_diff) % self.width as i64;
                         let mut y_left = (point_y-distance+y_diff) % self.height as i64;
                         if x_left < 0 {
-                            x_left = self.width as i64 + x_left;
+                            x_left += self.width as i64;
                         }
                         if y_left < 0 {
-                            y_left = self.height as i64 + y_left;
+                            y_left += self.height as i64;
                         }
                         point_set.push((x_left.try_into().unwrap(), y_left.try_into().unwrap())); // TODO: manage overflow error.
                     };
