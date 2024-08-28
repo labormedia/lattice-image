@@ -26,7 +26,8 @@ struct Coefficients {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let n_sequence = 500;
+    let n_sequence = 50000;
+    let n_step = 100;
     let (size_x, size_y) = (100,100);
     let mut matrixU: MatrixImage<LatticeElement<f32>> = MatrixImageBuilder::init()
         .with_initial_value(LatticeElement::from(1_f32))
@@ -69,9 +70,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         let matrix_to_drawU = matrixU.clone()*values_MAX.clone();
         let matrix_to_drawV = matrixV.clone()*values_MAX.clone();
     
-        let _image = matrixU
-            .draw_multi_channel(&[Some(matrix_to_drawU), None, Some(matrix_to_drawV), None], None)?
-            .save(prepend+&id.to_string()+".png")?;
+        if id % n_step == 0 {
+            let _image = matrixU
+                .draw_multi_channel(&[Some(matrix_to_drawU), None, Some(matrix_to_drawV), None], None)?
+                .save(prepend+&id.to_string()+".png")?;
+        }
         
         (matrixU, matrixV) = reaction_diffusion(matrixU, matrixV, &coefficients)?;
     }

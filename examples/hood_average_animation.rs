@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     
     for point_x in 0..size_x {
         for point_y in 0..size_y {
-            let value: LatticeElement<u32> = LatticeElement(rng.gen_range(0_32..u32::MAX));
+            let value: LatticeElement<u32> = LatticeElement(rng.gen_range(0_u32..u32::MAX));
             let edit_point = (point_x as u32, point_y as u32);
             let _ = matrix.edit_point(edit_point, value);
             #[cfg(debug_assertions)]

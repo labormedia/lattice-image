@@ -27,10 +27,10 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
     fn draw(&self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
-        for point in 0..(usize::from(self.get_width()*self.get_height())) {
+        for point in 0..(self.get_width()*self.get_height()) {
             let (x,y) = self.to_2d_point(point)?;
             let data_point = self.get_data_point(point);
-            let channel_point = u8::try_from(data_point.clone())?;
+            let channel_point = u8::from(data_point.clone());
             
             match color {
                 Channel::Red => {
@@ -52,12 +52,12 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
     fn draw_multi_channel(&self, channels: &[Option<MatrixImage<T>>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
         let mut length_holder = 0_usize;
         let filtered_channels: Vec<MatrixImage<T>> = channels
-            .into_iter()
+            .iter()
             .filter_map(|option| option.clone())
             .collect();
         let have_same_length = match filtered_channels.as_slice() {
             [head, tail @ ..] => tail.iter().all(|matrix| {
-                length_holder = head.data.len().clone();  // holds the last length value
+                length_holder = head.data.len();  // holds the last length value
                 head.data.len() == matrix.data.len()
             }),
             [] => false,
@@ -80,10 +80,7 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
                 .collect();
             ordered_channels
         } else {
-            channels
-                .iter()
-                .map(|channel| channel.clone())
-                .collect()
+            channels.to_vec()
         };
         
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
@@ -190,8 +187,7 @@ impl From<LatticeElement<u32>> for u32 {
 
 impl From<LatticeElement<f32>> for u8 {
     fn from(value: LatticeElement<f32>) -> Self {
-        let result = ((value.0  / f32::MAX) * (u8::MAX as f32)) as u8;
-        result
+        ((value.0  / f32::MAX) * (u8::MAX as f32)) as u8
     }
 }
 
