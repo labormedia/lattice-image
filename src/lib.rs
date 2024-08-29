@@ -181,8 +181,9 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         };
         Ok(sum - T::default())
     }
-    /// Receives a closure that takes its parameterized Neighborhood and evaluates an objective function.
-    /// Returns the optimal evaluation for every point evaluated, which minimizes or maximizes the evaluation.
+    /// Receives a point, neighborhood size and Neighborhood type, together with an objective function.
+    /// Evaluates all pair of points from the reference to the neighborhood, and returns the point and evaluation T that maximizes
+    /// The objective function.
     pub fn optimal_peer(
         &self, self_point: (u32, u32), 
         hood_size: usize, 
