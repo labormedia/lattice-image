@@ -5,6 +5,7 @@ use matrix_graph::{
     traits::{
         Draw,
         LatticeElement,
+        Optimal,
     },
 };
 use std::error::Error;
