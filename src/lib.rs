@@ -13,6 +13,7 @@ use std::error::Error;
 
 mod error;
 pub mod traits;
+pub mod four_channel;
 
 use traits::{
     Draw,
