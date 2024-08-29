@@ -28,7 +28,7 @@ pub use lattice_element::*;
 pub mod max;
 pub use max::*;
 
-pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
+pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> where u8: From<T> {
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     fn get_data_point(&self, point: usize) -> T;
@@ -67,8 +67,8 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
             .collect();
         let have_same_length = match filtered_channels.as_slice() {
             [head, tail @ ..] => tail.iter().all(|matrix| {
-                length_holder = head.data.len();  // holds the last length value
-                head.data.len() == matrix.data.len()
+                length_holder = head.get_data().len();  // holds the last length value
+                head.get_data().len() == matrix.get_data().len()
             }),
             [] => false,
         };
@@ -99,10 +99,10 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
             let (x,y) = self.into_2d_point(i)?;
             
             let pixel = Rgba([
-                if let Some(matrix) = &matrix_order[0] { u8::from(matrix.data[i].clone()) } else { 0_u8 }, 
-                if let Some(matrix) = &matrix_order[1] { u8::from(matrix.data[i].clone()) } else { 0_u8 }, 
-                if let Some(matrix) = &matrix_order[2] { u8::from(matrix.data[i].clone()) } else { 0_u8 }, 
-                if let Some(matrix) = &matrix_order[3] { u8::from(matrix.data[i].clone()) } else { 255_u8 }]);
+                if let Some(matrix) = &matrix_order[0] { u8::from(matrix.get_data()[i].clone()) } else { 0_u8 }, 
+                if let Some(matrix) = &matrix_order[1] { u8::from(matrix.get_data()[i].clone()) } else { 0_u8 }, 
+                if let Some(matrix) = &matrix_order[2] { u8::from(matrix.get_data()[i].clone()) } else { 0_u8 }, 
+                if let Some(matrix) = &matrix_order[3] { u8::from(matrix.get_data()[i].clone()) } else { 255_u8 }]);
             image.put_pixel(x, y, pixel);
         }
             
