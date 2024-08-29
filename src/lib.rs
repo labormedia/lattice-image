@@ -231,6 +231,9 @@ impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> 
     fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>> {
         self.to_2d_point(point)
     }
+    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>> {
+        self.to_absolute_point(point)
+    }
     fn get_data_point(&self, point: usize) -> T {
         self.data[point].clone()
     }
