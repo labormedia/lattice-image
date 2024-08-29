@@ -74,7 +74,7 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     }
 }
 
-impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T>> MatrixImage<T> {
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> MatrixImage<T> {
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 > self.width as u32 || point.1 > self.height as u32 { 
@@ -181,9 +181,27 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         };
         Ok(sum - T::default())
     }
+    /// Receives a closure that takes its parameterized Neighborhood and evaluates an objective function.
+    /// Returns the optimal evaluation for every point evaluated, which minimizes or maximizes the evaluation.
+    pub fn optimal_peer(
+        &self, self_point: (u32, u32), 
+        hood_size: usize, 
+        hood_type: Neighborhood, 
+        objective: fn(self_point: (u32, u32), other: (u32, u32)) -> T 
+    ) -> Option<((u32, u32), T)> {
+        let hood = self.get_lattice_neighborhood(self_point, hood_size, hood_type);
+        hood
+            .into_iter()
+            .map( |neighbor| {
+                (neighbor, objective(self_point, neighbor))
+            })
+            .max_by(|a, b| {
+                a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
+            })
+    }
 }
 
-impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8> + PartialEq> Draw<T> for MatrixImage<T> 
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Max + From<u8> + PartialEq + PartialOrd> Draw<T> for MatrixImage<T> 
  where u8: From<T> {
     fn get_width(&self) -> usize {
         self.width    
@@ -191,7 +209,7 @@ impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> 
     fn get_height(&self) -> usize {
         self.height
     }
-    fn to_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>> {
+    fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>> {
         self.to_2d_point(point)
     }
     fn get_data_point(&self, point: usize) -> T {

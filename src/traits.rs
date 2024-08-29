@@ -1,10 +1,13 @@
 use std::error::Error;
 use core::fmt::Debug;
-use core::ops::{
-    Div,
-    Mul,
-    Add,
-    Sub,
+use core::{
+    cmp,
+    ops::{
+        Div,
+        Mul,
+        Add,
+        Sub,
+    },
 };
 use image::{
     Rgba,
@@ -23,12 +26,12 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     fn get_data_point(&self, point: usize) -> T;
-    fn to_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>>;
+    fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>>;
     fn draw(&self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
         for point in 0..(self.get_width()*self.get_height()) {
-            let (x,y) = self.to_2d_point(point)?;
+            let (x,y) = self.into_2d_point(point)?;
             let data_point = self.get_data_point(point);
             let channel_point = u8::from(data_point.clone());
             
@@ -86,7 +89,7 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
 
         for i in 0..length_holder {
-            let (x,y) = self.to_2d_point(i)?;
+            let (x,y) = self.into_2d_point(i)?;
             
             let pixel = Rgba([
                 if let Some(matrix) = &matrix_order[0] { u8::from(matrix.data[i].clone()) } else { 0_u8 }, 
@@ -113,7 +116,7 @@ impl Max for f32 {
 }
 
 #[derive(Default, Clone, Debug)]
-pub struct LatticeElement<T: Div + Mul + Add + PartialEq>(pub T);
+pub struct LatticeElement<T: Div + Mul + Add + PartialEq + PartialOrd>(pub T);
 
 /*impl<T: Div<Output = T> + Mul + Add + Sub> Div for LatticeElement<T> {
     type Output = Self;
@@ -136,40 +139,46 @@ impl Div for LatticeElement<f32> {
     }
 }
 
-impl<T: Div + Mul<Output=T> + Add + Sub + PartialEq> Mul for LatticeElement<T> {
+impl<T: Div + Mul<Output=T> + Add + Sub + PartialEq + PartialOrd> Mul for LatticeElement<T> {
     type Output = Self;
     fn mul(self, value: Self) -> Self {
         Self(self.0 * value.0)
     }
 }
 
-impl<T: Div + Mul + Add<Output=T> + Sub + PartialEq> Add for LatticeElement<T> {
+impl<T: Div + Mul + Add<Output=T> + Sub + PartialEq + PartialOrd> Add for LatticeElement<T> {
     type Output = Self;
     fn add(self, value: Self) -> Self {
         Self(self.0 + value.0)
     }
 }
 
-impl<T: Div + Mul + Add + Sub<Output=T> + PartialEq> Sub for LatticeElement<T> {
+impl<T: Div + Mul + Add + Sub<Output=T> + PartialEq + PartialOrd> Sub for LatticeElement<T> {
     type Output = Self;
     fn sub(self, value: Self) -> Self {
         Self(self.0 - value.0)
     }
 }
 
-impl<T: Max + Div<Output=T> + Mul<Output=T> + Add<Output=T> + From<u8> + PartialEq> Max for LatticeElement<T> {
+impl<T: Max + Div<Output=T> + Mul<Output=T> + Add<Output=T> + From<u8> + PartialEq + PartialOrd> Max for LatticeElement<T> {
     const MAX: Self = LatticeElement(T::MAX);
 }
 
-impl<T: Div + Mul + Add + PartialEq> From<T> for LatticeElement<T> {
+impl<T: Div + Mul + Add + PartialEq + PartialOrd> From<T> for LatticeElement<T> {
     fn from(value: T) -> Self {
         LatticeElement(value)
     }
 }
 
-impl<T: Div + Mul + Add + PartialEq> PartialEq for LatticeElement<T> {
+impl<T: Div + Mul + Add + PartialEq + PartialOrd> PartialEq for LatticeElement<T> {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
+    }
+}
+
+impl<T: Div + Mul + Add + PartialEq + PartialOrd> PartialOrd for LatticeElement<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
     }
 }
 
