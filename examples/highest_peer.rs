@@ -35,8 +35,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
             
-        
-    println!("Matrix {:?}", matrix);
+    println!("Matrix :\n{}", matrix);
+    //println!("{:?}", matrix);
         
     Ok(())
 }
