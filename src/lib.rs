@@ -1,4 +1,8 @@
-use core::fmt::Debug;
+use core::fmt::{
+    self,
+    Display,
+    Debug,
+};
 use core::ops::{
     Div,
     Mul,
@@ -35,6 +39,20 @@ pub struct MatrixImage<T>
     height: usize,
     width: usize,
     data: Vec<T>,
+}
+
+impl<T: Clone + Debug> Display for MatrixImage<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut data_clone = self.data.clone();
+        let mut fmt_accumulator = String::new();
+        let mut cursor = 0;
+        while cursor < self.height {
+            fmt_accumulator += &format!("{} {:?}\n",cursor, &self.data[cursor*self.width..(cursor+1)*self.width]);
+            cursor += 1;
+        }
+        
+        write!(f, "{}", fmt_accumulator)
+    }
 }
 
 impl<T: Mul<Output=T> + Clone> Mul for MatrixImage<T> {
@@ -212,6 +230,9 @@ impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> 
     }
     fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>> {
         self.to_2d_point(point)
+    }
+    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>> {
+        self.to_absolute_point(point)
     }
     fn get_data_point(&self, point: usize) -> T {
         self.data[point].clone()

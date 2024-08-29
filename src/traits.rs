@@ -27,6 +27,7 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
     fn get_height(&self) -> usize;
     fn get_data_point(&self, point: usize) -> T;
     fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>>;
+    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>>;
     fn draw(&self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
