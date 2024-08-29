@@ -16,6 +16,7 @@ use image::{
 use crate::{
     MatrixImage,
     Channel,
+    Neighborhood,
 };
 
 pub trait Max {
@@ -223,4 +224,17 @@ impl From<u8> for LatticeElement<u32> {
     fn from(value: u8) -> Self {
         LatticeElement(value as u32)
     }
+}
+
+pub trait Optimal<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> {
+    /// Receives a point, neighborhood size and Neighborhood type, together with an objective function.
+    /// Evaluates all pair of points from the reference to the neighborhood, and returns the point and evaluation T that maximizes
+    /// The objective function.
+    fn optimal_peer(
+        &self, 
+        self_point: (u32, u32), 
+        hood_size: usize, 
+        hood_type: Neighborhood, 
+        objective: impl Fn(&Self, (u32, u32), (u32, u32)) -> T 
+    ) -> Option<((u32, u32), T)>;
 }
