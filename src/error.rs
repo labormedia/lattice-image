@@ -1,11 +1,11 @@
 use std::{
-    error::Error,
     fmt::{
         Display,
         Formatter,
         self,
     },
 };
+pub use std::error::Error;
 
 #[derive(Debug)]
 pub enum MatrixError {
