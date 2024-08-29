@@ -19,9 +19,14 @@ use crate::{
     Neighborhood,
 };
 
-pub trait Max {
-    const MAX: Self;
-}
+pub mod from;
+pub use from::*;
+
+pub mod lattice_element;
+pub use lattice_element::*;
+
+pub mod max;
+pub use max::*;
 
 pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
     fn get_width(&self) -> usize;
@@ -102,127 +107,6 @@ pub trait Draw<T: Debug +  Clone + PartialEq> where u8: From<T> {
         }
             
         Ok(image)
-    }
-}
-
-impl Max for u8 {
-    const MAX: u8 = u8::MAX;
-}
-
-impl Max for u32 {
-    const MAX: u32 = u32::MAX;
-}
-
-impl Max for f32 {
-    const MAX: f32 = f32::MAX;
-}
-
-#[derive(Default, Clone, Debug)]
-pub struct LatticeElement<T: Div + Mul + Add + PartialEq + PartialOrd>(pub T);
-
-/*impl<T: Div<Output = T> + Mul + Add + Sub> Div for LatticeElement<T> {
-    type Output = Self;
-    fn div(self, value: Self) -> Self {
-        Self(self.0 / value.0)
-    }
-}*/
-
-impl Div for LatticeElement<u32> {
-    type Output = Self;
-    fn div(self, value: Self) -> Self {
-        Self(self.0 / value.0 )
-    }
-}
-
-impl Div for LatticeElement<f32> {
-    type Output = Self;
-    fn div(self, value: Self) -> Self {
-        Self(self.0 / value.0)
-    }
-}
-
-impl<T: Div + Mul<Output=T> + Add + Sub + PartialEq + PartialOrd> Mul for LatticeElement<T> {
-    type Output = Self;
-    fn mul(self, value: Self) -> Self {
-        Self(self.0 * value.0)
-    }
-}
-
-impl<T: Div + Mul + Add<Output=T> + Sub + PartialEq + PartialOrd> Add for LatticeElement<T> {
-    type Output = Self;
-    fn add(self, value: Self) -> Self {
-        Self(self.0 + value.0)
-    }
-}
-
-impl<T: Div + Mul + Add + Sub<Output=T> + PartialEq + PartialOrd> Sub for LatticeElement<T> {
-    type Output = Self;
-    fn sub(self, value: Self) -> Self {
-        Self(self.0 - value.0)
-    }
-}
-
-impl<T: Max + Div<Output=T> + Mul<Output=T> + Add<Output=T> + From<u8> + PartialEq + PartialOrd> Max for LatticeElement<T> {
-    const MAX: Self = LatticeElement(T::MAX);
-}
-
-impl<T: Div + Mul + Add + PartialEq + PartialOrd> From<T> for LatticeElement<T> {
-    fn from(value: T) -> Self {
-        LatticeElement(value)
-    }
-}
-
-impl<T: Div + Mul + Add + PartialEq + PartialOrd> PartialEq for LatticeElement<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
-    }
-}
-
-impl<T: Div + Mul + Add + PartialEq + PartialOrd> PartialOrd for LatticeElement<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
-        self.0.partial_cmp(&other.0)
-    }
-}
-
-impl From<LatticeElement<f32>> for f32 {
-    fn from(value: LatticeElement<f32>) -> Self {
-       value.0
-    }
-}
-
-impl From<LatticeElement<u32>> for u32 {
-    fn from(value: LatticeElement<u32>) -> Self {
-        value.0
-    }
-}
-
-impl From<LatticeElement<f32>> for u8 {
-    fn from(value: LatticeElement<f32>) -> Self {
-        ((value.0  / f32::MAX) * (u8::MAX as f32)) as u8
-    }
-}
-
-impl From<LatticeElement<u32>> for u8 {
-    fn from(value: LatticeElement<u32>) -> Self {
-        ((value.0 as f32 / u32::MAX as f32) * u8::MAX as f32) as u8
-    }
-}
-
-impl From<LatticeElement<u8>> for u8 {
-    fn from(value: LatticeElement<u8>) -> Self {
-        value.0
-    }
-}
-
-impl From<u8> for LatticeElement<f32> {
-    fn from(value: u8) -> Self {
-        LatticeElement(value as f32)
-    }
-}
-
-impl From<u8> for LatticeElement<u32> {
-    fn from(value: u8) -> Self {
-        LatticeElement(value as u32)
     }
 }
 
