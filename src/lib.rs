@@ -188,13 +188,13 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         &self, self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
-        objective: fn(self_point: (u32, u32), other: (u32, u32)) -> T 
+        objective: impl Fn(&Self, (u32, u32), (u32, u32)) -> T 
     ) -> Option<((u32, u32), T)> {
         let hood = self.get_lattice_neighborhood(self_point, hood_size, hood_type);
         hood
             .into_iter()
             .map( |neighbor| {
-                (neighbor, objective(self_point, neighbor))
+                (neighbor, objective(self, self_point, neighbor))
             })
             .max_by(|a, b| {
                 a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
