@@ -2,7 +2,10 @@ use matrix_graph::{
     MatrixImageBuilder,
     Channel::*,
     Neighborhood,
-    traits::Draw,
+    traits::{
+        Draw,
+        DrawMultiChannel,
+    },
     four_channel::FourChannelMatrix,
 };
 use std::error::Error;

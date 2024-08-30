@@ -28,12 +28,15 @@ pub use lattice_element::*;
 pub mod max;
 pub use max::*;
 
-pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> where u8: From<T> {
+pub trait Matrix<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> {
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     fn get_data_point(&self, point: usize) -> T;
     fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>>;
     fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>>;
+}
+
+pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd>: Matrix<T> where u8: From<T> {
     fn draw(&self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
@@ -59,6 +62,9 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
         }
         Ok(image)
     }
+}
+
+pub trait DrawMultiChannel<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd>: Matrix<T> where u8: From<T> {
     fn draw_multi_channel(&self, channels: &[MatrixImage<T>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
         let mut length_holder = 0_usize;
         let have_same_length = match channels.as_slice() {

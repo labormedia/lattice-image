@@ -4,6 +4,7 @@ use matrix_graph::{
     Neighborhood,
     traits::{
         Draw,
+        DrawMultiChannel,
         LatticeElement,
     },
 };

@@ -8,7 +8,9 @@ pub use matrix_image::{
 };
 
 use traits::{
+    Matrix,
     Draw,
+    DrawMultiChannel,
     Max,
     Optimal,
 };

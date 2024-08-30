@@ -11,7 +11,9 @@ use core::ops::{
 };
 use crate::{
     Neighborhood,
+    Matrix,
     Draw,
+    DrawMultiChannel,
     Optimal,
     traits,
     error,
@@ -189,8 +191,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     }
 }
 
-impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> Draw<T> for MatrixImage<T> 
- where u8: From<T> {
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> Matrix<T> for MatrixImage<T> {
     fn get_width(&self) -> usize {
         self.width    
     }
@@ -206,6 +207,15 @@ impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> 
     fn get_data_point(&self, point: usize) -> T {
         self.data[point].clone()
     }
+}
+
+
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> Draw<T> for MatrixImage<T> 
+ where u8: From<T> {}
+
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> DrawMultiChannel<T> for MatrixImage<T> 
+ where u8: From<T> {
+
 }
 
 impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> Optimal<T> for MatrixImage<T> {
