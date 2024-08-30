@@ -6,7 +6,10 @@ use core::ops::{
 };
 use crate::{
     MatrixImage,
-    traits,
+    traits::{
+        self,
+        Matrix,
+    },
 };
 
 #[derive(Default, Clone, Debug, PartialEq)]
@@ -16,6 +19,12 @@ pub struct FourChannelMatrix<T>
     height: usize,
     width: usize,
     data: [MatrixImage<T>; 4],
+}
+
+impl<T: Clone> FourChannelMatrix<T> {
+    pub fn get_data(&self) -> [MatrixImage<T>; 4] {
+        self.data.clone()
+    }
 }
 
 impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> From<[MatrixImage<T>; 4]> for FourChannelMatrix<T> {
@@ -38,8 +47,3 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     }
 }
 
-impl<T: Clone> FourChannelMatrix<T> {
-    pub fn get_data(&self) -> [MatrixImage<T>; 4] {
-        self.data.clone()
-    }
-}

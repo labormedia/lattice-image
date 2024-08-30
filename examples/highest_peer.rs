@@ -3,7 +3,7 @@ use matrix_graph::{
     MatrixImageBuilder,
     Neighborhood,
     traits::{
-        Draw,
+        Matrix,
         LatticeElement,
         Optimal,
     },

@@ -14,6 +14,7 @@ use image::{
     RgbaImage,
 };
 use crate::{
+    error,
     MatrixImage,
     Channel,
     Neighborhood,
@@ -29,11 +30,33 @@ pub mod max;
 pub use max::*;
 
 pub trait Matrix<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> {
+    type Data;
+    fn get_data(&self) -> Self::Data;
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
-    fn get_data_point(&self, point: usize) -> T;
-    fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn Error>>;
-    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>>;
+    /// Checks for bounds within the size of the matrix
+    fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
+        if point.0 > self.get_width() as u32 || point.1 > self.get_height() as u32 { 
+            Err(Box::new(error::MatrixError::Overflow))
+        } else {
+            Ok(true)
+        }
+    }
+    fn get_point_value<U: Into<u32>>(&self, point: (U,U)) -> Result<T, Box<dyn error::Error>>;
+    fn get_absolute_point_data(&self, absolute_point: usize) -> T;
+    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), Box<dyn error::Error>> {
+        let x: u32 = (absolute_point % self.get_width()) as u32;
+        let y: u32 = absolute_point as u32 / self.get_width() as u32; 
+        self.check_point_bounds((x,y))?;
+        Ok((x,y))
+    }
+    /// Transforms a 2D point reference point into a 1D point correlated with the 
+    /// matrix raw data and its width/height.
+    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>> {
+        self.check_point_bounds(point)?;
+        Ok( (point.0 + point.1 * (self.get_width() as u32)) as usize )   
+    }
+    fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), Box<dyn error::Error>>;
 }
 
 pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd>: Matrix<T> where u8: From<T> {
@@ -42,7 +65,7 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
         
         for point in 0..(self.get_width()*self.get_height()) {
             let (x,y) = self.into_2d_point(point)?;
-            let data_point = self.get_data_point(point);
+            let data_point = self.get_absolute_point_data(point);
             let channel_point = u8::from(data_point.clone());
             
             match color {

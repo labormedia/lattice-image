@@ -3,6 +3,7 @@ use matrix_graph::{
     MatrixImageBuilder,
     Neighborhood,
     traits::{
+        Matrix,
         Draw,
         DrawMultiChannel,
         LatticeElement,
