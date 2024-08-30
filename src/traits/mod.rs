@@ -29,7 +29,10 @@ pub use lattice_element::*;
 pub mod max;
 pub use max::*;
 
-pub trait Matrix<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> {
+pub trait Matrix<T>
+where
+ T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd
+{
     type Data;
     fn get_data(&self) -> Self::Data;
     fn get_width(&self) -> usize;
@@ -59,7 +62,11 @@ pub trait Matrix<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T
     fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), Box<dyn error::Error>>;
 }
 
-pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd>: Matrix<T> where u8: From<T> {
+pub trait Draw<T>: Matrix<T> 
+where 
+ T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd,
+ u8: From<T> 
+{
     fn draw(&self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
@@ -87,7 +94,11 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
     }
 }
 
-pub trait DrawMultiChannel<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd>: Matrix<T> where u8: From<T> {
+pub trait DrawMultiChannel<T>: Matrix<T>
+ where 
+ T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd,
+ u8: From<T> 
+{
     fn draw_multi_channel(&self, channels: &[MatrixImage<T>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
         let mut length_holder = 0_usize;
         let have_same_length = match channels.as_slice() {
@@ -133,7 +144,10 @@ pub trait DrawMultiChannel<T: Clone + Debug + Default + Max + Add<Output=T> + Di
     }
 }
 
-pub trait Optimal<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> {
+pub trait Optimal<T>
+where
+ T:Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd
+{
     /// Receives a point, neighborhood size and Neighborhood type, together with an objective function.
     /// Evaluates all pair of points from the reference to the neighborhood, and returns the point and evaluation T that maximizes
     /// The objective function.
