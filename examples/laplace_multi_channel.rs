@@ -20,6 +20,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         .with_initial_value(LatticeElement::from(u32::MAX - 1_u32))
         .with_height_and_width(size_x,size_y)
         .build();
+    let mut matrix_zeroes: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init()
+        .with_initial_value(LatticeElement::from(0_u32))
+        .with_height_and_width(size_x,size_y)
+        .build();
+    let mut matrix_max: MatrixImage<LatticeElement<u32>> = MatrixImageBuilder::init()
+        .with_initial_value(LatticeElement::from(u32::MAX))
+        .with_height_and_width(size_x,size_y)
+        .build();
     
     //let mut matrix = randomize_matrix(&mut matrixU, u32::MAX);
     
@@ -40,17 +48,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         let prepend = "./animation/matrix_".to_owned();
     
         let _image = matrixU
-            .draw_multi_channel(&[Some(matrixU.clone()), None, Some(matrixV.clone()), None], None)?
+            .draw_multi_channel(&[matrixU.clone(), matrix_zeroes.clone(), matrixV.clone(), matrix_max.clone()], None)?
             .save(prepend+&id.to_string()+".png")?;
         
-        matrixU = reaction_diffusion(matrixU)?;
-        matrixV = reaction_diffusion(matrixV)?;
+        matrixU = laplace_operator(matrixU)?;
+        matrixV = laplace_operator(matrixV)?;
     }
     
     Ok(())
 }
 
-fn reaction_diffusion(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, Box<dyn Error>> {
+fn laplace_operator(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, Box<dyn Error>> {
     let size_x = matrix.get_height();
     let size_y = matrix.get_width();
     let mut new_matrix = matrix.clone();

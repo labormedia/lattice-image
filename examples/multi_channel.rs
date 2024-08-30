@@ -3,6 +3,7 @@ use matrix_graph::{
     Channel::*,
     Neighborhood,
     traits::Draw,
+    four_channel::FourChannelMatrix,
 };
 use std::error::Error;
 use rand::Rng;
@@ -28,8 +29,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     
     let _ = matrix.edit_point(center, 0);
     
+    let multi_channel: FourChannelMatrix<u8> = FourChannelMatrix::from([matrix.clone(), matrix.clone(), matrix.clone(), matrix.clone()]);
+    
     let _image = matrix
-        .draw_multi_channel(&[Some(matrix.clone()), Some(matrix.clone()), None, None], Some(&[Red, Blue, Green, Alpha]))?
+        .draw_multi_channel(&multi_channel.get_data(), Some(&[Red, Blue, Green, Alpha]))?
         .save("matrix.png")?;
 
     #[cfg(debug_assertions)]

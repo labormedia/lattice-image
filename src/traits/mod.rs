@@ -59,13 +59,9 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
         }
         Ok(image)
     }
-    fn draw_multi_channel(&self, channels: &[Option<MatrixImage<T>>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
+    fn draw_multi_channel(&self, channels: &[MatrixImage<T>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
         let mut length_holder = 0_usize;
-        let filtered_channels: Vec<MatrixImage<T>> = channels
-            .iter()
-            .filter_map(|option| option.clone())
-            .collect();
-        let have_same_length = match filtered_channels.as_slice() {
+        let have_same_length = match channels.as_slice() {
             [head, tail @ ..] => tail.iter().all(|matrix| {
                 length_holder = head.get_data().len();  // holds the last length value
                 head.get_data().len() == matrix.get_data().len()
@@ -73,7 +69,7 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
             [] => false,
         };
         assert!(have_same_length, "Matrices should have the same length.");
-        let matrix_order: Vec<Option<MatrixImage<T>>> = if let Some(channel_order) = channel_order {
+        let matrix_order: Vec<MatrixImage<T>> = if let Some(channel_order) = channel_order {
             let mut order = channel_order
                 .iter()
                 .enumerate()
@@ -81,12 +77,10 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
             order.sort_by(|indexed_channel_a, indexed_channel_b| {
                     indexed_channel_a.1.cmp(indexed_channel_b.1)
                 });
-            let ordered_channels: Vec<Option<MatrixImage<T>>> = order
+            let ordered_channels: Vec<MatrixImage<T>> = order
                 .iter()
                 .map(|indexed| indexed.0)
-                .map(|index| {
-                    channels[index].clone()
-                })
+                .map(|index| { channels[index].clone() })
                 .collect();
             ordered_channels
         } else {
@@ -99,10 +93,10 @@ pub trait Draw<T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> 
             let (x,y) = self.into_2d_point(i)?;
             
             let pixel = Rgba([
-                if let Some(matrix) = &matrix_order[0] { u8::from(matrix.get_data()[i].clone()) } else { 0_u8 }, 
-                if let Some(matrix) = &matrix_order[1] { u8::from(matrix.get_data()[i].clone()) } else { 0_u8 }, 
-                if let Some(matrix) = &matrix_order[2] { u8::from(matrix.get_data()[i].clone()) } else { 0_u8 }, 
-                if let Some(matrix) = &matrix_order[3] { u8::from(matrix.get_data()[i].clone()) } else { 255_u8 }]);
+                u8::from(matrix_order[0].get_data()[i].clone()), 
+                u8::from(matrix_order[1].get_data()[i].clone()), 
+                u8::from(matrix_order[2].get_data()[i].clone()), 
+                u8::from(matrix_order[3].get_data()[i].clone())]);
             image.put_pixel(x, y, pixel);
         }
             

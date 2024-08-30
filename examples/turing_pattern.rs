@@ -69,7 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let matrix_to_drawU = matrixU.clone()*values_MAX.clone();
             let matrix_to_drawV = matrixV.clone()*values_MAX.clone();
             let _image = matrixU
-                .draw_multi_channel(&[Some(matrix_to_drawU), None, Some(matrix_to_drawV), None], None)?
+                .draw_multi_channel(&[matrix_to_drawU, values_MAX.clone(), matrix_to_drawV, values_MAX.clone()], None)?
                 .save(prepend+&id.to_string()+".png")?;
         }
         
