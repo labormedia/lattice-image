@@ -30,8 +30,8 @@ pub mod max;
 pub use max::*;
 
 pub trait Matrix<T>
-where
- T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd
+//where
+// T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd
 {
     type Data;
     fn get_data(&self) -> Self::Data;
@@ -39,7 +39,7 @@ where
     fn get_height(&self) -> usize;
     /// Checks for bounds within the size of the matrix
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
-        if point.0 > self.get_width() as u32 || point.1 > self.get_height() as u32 { 
+        if point.0 >= self.get_width() as u32 || point.1 >= self.get_height() as u32 { 
             Err(Box::new(error::MatrixError::Overflow))
         } else {
             Ok(true)
@@ -146,7 +146,7 @@ pub trait DrawMultiChannel<T>: Matrix<T>
 
 pub trait Optimal<T>
 where
- T:Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd
+ T: PartialOrd
 {
     /// Receives a point, neighborhood size and Neighborhood type, together with an objective function.
     /// Evaluates all pair of points from the reference to the neighborhood, and returns the point and evaluation T that maximizes

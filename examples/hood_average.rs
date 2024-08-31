@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let edit_point = (point_x as u32, point_y as u32);
             let _ = matrix.edit_point(edit_point, value);
             #[cfg(debug_assertions)]
-            println!("edit_point {edit_point:?} value {value}");
+            println!("edit_point {edit_point:?} value {value:?}");
         }
     }
     
@@ -37,12 +37,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let value = matrix.get_point_value(*hood_point)?;
                 sum = sum + value;
                 #[cfg(debug_assertions)]
-                println!("center {center:?} hood_point {hood_point:?} value {value} sum {sum}");
+                println!("center {center:?} hood_point {hood_point:?} value {value:?} sum {sum:?}");
             }
             let hood_size = LatticeElement(neighborhood.len() as u32);
             let average = (sum / hood_size) * LatticeElement(u32::MAX);
             #[cfg(debug_assertions)]
-            println!("sum {sum} hood_size {hood_size} average {average}");
+            println!("sum {sum:?} hood_size {hood_size:?} average {average:?}");
             let _ = recipient_matrix.edit_point(center, average)?;
         }
     }

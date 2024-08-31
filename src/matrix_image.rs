@@ -142,6 +142,9 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     /// Given that the Neighborhood includes the value of the point being evaluated, we need to substract it from
     /// the neighborhood summation too.
     pub fn laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+        self.asymmetrical_laplace_operator(point, size, hood_type)
+    }
+    pub fn asymmetrical_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
         let point_value = self.get_point_value(point)?;
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
@@ -151,9 +154,20 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         };
         Ok(sum - T::default())
     }
+    
+        pub fn symmetrical_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+        let point_value = self.get_point_value(point)?;
+        let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
+        let mut sum = T::default();  // initial value which is substracted afterwards.
+        for hood_point in &neighborhood {
+            let hood_point_value = self.get_point_value(*hood_point)?;
+            sum = sum + (hood_point_value - point_value.clone());
+        };
+        Ok(sum - T::default())
+    }
 }
 
-impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> Matrix<T> for MatrixImage<T> {
+impl<T: Clone> Matrix<T> for MatrixImage<T> {
     type Data = Vec<T>;
     /// Data accessor
     fn get_data(&self) -> Self::Data {
@@ -165,11 +179,15 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     fn get_height(&self) -> usize {
         self.height
     }
-    fn into_2d_point(&self, point: usize) -> Result<(u32, u32), Box<dyn error::Error>> {
-        self.into_2d_point(point)
+    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), Box<dyn error::Error>> {
+        let x: u32 = (absolute_point % self.get_width()) as u32;
+        let y: u32 = absolute_point as u32 / self.get_width() as u32; 
+        self.check_point_bounds((x,y))?;
+        Ok((x,y))
     }
     fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn error::Error>> {
-        self.into_absolute_point(point)
+        self.check_point_bounds(point)?;
+        Ok( (point.0 + point.1 * (self.get_width() as u32)) as usize )
     }
     fn get_absolute_point_data(&self, absolute_point: usize) -> T {
         self.data[absolute_point].clone()

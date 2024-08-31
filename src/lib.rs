@@ -27,3 +27,16 @@ pub enum Neighborhood {
     VonNeumann,
     Moore,
 }
+
+impl Neighborhood {
+    pub fn length(self, size: usize) -> usize {
+        match self {
+            Self::VonNeumann => {
+                size * size + ((1 + size) * (1 + size))
+            },
+            Self::Moore => {
+                3_usize.pow(size as u32) - 1
+            },
+        }
+    }
+}
