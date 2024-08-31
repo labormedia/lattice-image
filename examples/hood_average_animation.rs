@@ -4,6 +4,7 @@ use matrix_graph::{
     Channel::*,
     Neighborhood,
     traits::{
+        Matrix,
         Draw,
         LatticeElement,
     },
@@ -21,9 +22,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         for point_y in 0..size_y {
             let value: LatticeElement<u32> = LatticeElement(rng.gen_range(0_u32..u32::MAX));
             let edit_point = (point_x as u32, point_y as u32);
-            let _ = matrix.edit_point(edit_point, value);
+            let _ = matrix.edit_point(edit_point, value.clone());
             #[cfg(debug_assertions)]
-            println!("edit_point {edit_point:?} value {value}");
+            println!("edit_point {edit_point:?} value {value:?}");
         }
     }
     
@@ -53,12 +54,12 @@ fn still_image(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<L
                 let value = recipient_matrix.get_point_value(*hood_point)?;
                 sum = sum + value;
                 #[cfg(debug_assertions)]
-                println!("center {center:?} hood_point {hood_point:?} value {value} sum {sum}");
+                println!("center {center:?} hood_point {hood_point:?} value {value:?} sum {sum:?}");
             }
             let hood_size = LatticeElement(neighborhood.len() as u32);
             let average = sum / hood_size;
             #[cfg(debug_assertions)]
-            println!("sum {sum} hood_size {hood_size} average {average}");
+            println!("sum {sum:?} hood_size {hood_size:?} average {average:?}");
             let _ = recipient_matrix.edit_point(center, average)?;
         }
     }

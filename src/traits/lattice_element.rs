@@ -6,6 +6,7 @@ use core::{
         Add,
         Sub,
     },
+    fmt::Debug,
 };
 use super::Max;
 
@@ -20,6 +21,13 @@ pub struct LatticeElement<T: Div + Mul + Add + PartialEq + PartialOrd>(pub T);
 }*/
 
 impl Div for LatticeElement<u32> {
+    type Output = Self;
+    fn div(self, value: Self) -> Self {
+        Self(self.0 / value.0 )
+    }
+}
+
+impl Div for LatticeElement<i32> {
     type Output = Self;
     fn div(self, value: Self) -> Self {
         Self(self.0 / value.0 )
@@ -47,7 +55,7 @@ impl<T: Div + Mul + Add<Output=T> + Sub + PartialEq + PartialOrd> Add for Lattic
     }
 }
 
-impl<T: Div + Mul + Add + Sub<Output=T> + PartialEq + PartialOrd> Sub for LatticeElement<T> {
+impl<T: Div + Mul + Add + Sub<Output=T> + PartialEq + PartialOrd + Debug> Sub for LatticeElement<T> {
     type Output = Self;
     fn sub(self, value: Self) -> Self {
         Self(self.0 - value.0)

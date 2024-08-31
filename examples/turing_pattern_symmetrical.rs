@@ -94,9 +94,9 @@ fn reaction_diffusion(
         for point_y in 0..c.height as u32 {
             let center = (point_x as u32,point_y as u32);
             let Upoint: f32 = matrixU.get_point_value(center)?.into();
-            let lapU: f32 = matrixU.laplace_operator(center, 1, Neighborhood::VonNeumann)?.into();
+            let lapU: f32 = matrixU.symmetrical_laplace_operator(center, 1, Neighborhood::VonNeumann)?.into();
             let Vpoint: f32 = matrixV.get_point_value(center)?.into();
-            let lapV: f32 = matrixV.laplace_operator(center, 1, Neighborhood::VonNeumann)?.into();
+            let lapV: f32 = matrixV.symmetrical_laplace_operator(center, 1, Neighborhood::VonNeumann)?.into();
             let dU = (c.Du * lapU) - (Upoint * Vpoint * Vpoint) + (c.F * (1.0 - Upoint) );
             let dV = (c.Dv * lapV) + (Upoint * Vpoint * Vpoint) - ((c.F + c.k) * Vpoint);
             let _ = new_matrixU.edit_point(center, Upoint + dU)?;

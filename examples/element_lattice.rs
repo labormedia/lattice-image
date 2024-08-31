@@ -3,6 +3,7 @@ use matrix_graph::{
     Channel::*,
     Neighborhood,
     traits::{
+        Matrix,
         Draw,
         LatticeElement,
     },
