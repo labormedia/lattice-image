@@ -142,20 +142,20 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     /// Given that the Neighborhood includes the value of the point being evaluated, we need to substract it from
     /// the neighborhood summation too.
     pub fn laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
-        self.asymmetrical_laplace_operator(point, size, hood_type)
+        self.sum_first_laplace_operator(point, size, hood_type)
     }
-    pub fn asymmetrical_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+    pub fn sum_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
         let point_value = self.get_point_value(point)?;
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
         for hood_point in &neighborhood {
             let hood_point_value = self.get_point_value(*hood_point)?;
-            sum = sum + hood_point_value - point_value.clone();
+            sum = (sum + hood_point_value) - point_value.clone();
         };
         Ok(sum - T::default())
     }
     
-        pub fn symmetrical_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+        pub fn sub_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
         let point_value = self.get_point_value(point)?;
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
