@@ -25,6 +25,12 @@ impl<T: Clone> FourChannelMatrix<T> {
     pub fn get_data(&self) -> [MatrixImage<T>; 4] {
         self.data.clone()
     }
+    pub fn update_rule(
+        mut self, 
+        rule_function: impl Fn(Self) -> Self,
+    ) -> Self {
+        rule_function(self)
+    }
 }
 
 impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> From<[MatrixImage<T>; 4]> for FourChannelMatrix<T> {

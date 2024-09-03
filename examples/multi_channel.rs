@@ -37,7 +37,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     
     let _image = matrix
         .draw_multi_channel(&multi_channel.get_data(), Some(&[Red, Blue, Green, Alpha]))?
-        .save("matrix.png")?;
+        .save("./stills/matrix.png")?;
 
     #[cfg(debug_assertions)]
     println!("{:?}", neighborhood);
