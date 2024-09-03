@@ -29,7 +29,8 @@ impl<T: Clone> FourChannelMatrix<T> {
         mut self, 
         rule_function: impl Fn(Self) -> Self,
     ) -> Self {
-        rule_function(self)
+        self = rule_function(self);
+        self
     }
 }
 
