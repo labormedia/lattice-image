@@ -33,10 +33,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     
     let _ = matrix.edit_point(center, 0);
     
-    let multi_channel: FourChannelMatrix<u8> = FourChannelMatrix::from([matrix.clone(), matrix.clone(), matrix.clone(), matrix.clone()]);
+    let mut multi_channel: FourChannelMatrix<u8> = FourChannelMatrix::from([matrix.clone(), matrix.clone(), matrix.clone(), matrix.clone()]);
     
     let _image = matrix
-        .draw_multi_channel(&multi_channel.get_data(), Some(&[Red, Blue, Green, Alpha]))?
+        .draw_multi_channel(&multi_channel.get_data_ref(), Some(&[Red, Blue, Green, Alpha]))?
         .save("./stills/matrix.png")?;
 
     #[cfg(debug_assertions)]

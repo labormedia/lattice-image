@@ -22,15 +22,23 @@ pub struct FourChannelMatrix<T>
 }
 
 impl<T: Clone> FourChannelMatrix<T> {
-    pub fn get_data(&self) -> [MatrixImage<T>; 4] {
-        self.data.clone()
+    pub fn get_height(&self) -> &usize {
+        &self.height
+    }
+    pub fn get_width(&self) -> &usize {
+        &self.width
+    }
+    pub fn get_data_ref(&self) -> &[MatrixImage<T>; 4] {
+        &self.data
+    }
+    pub fn get_data_mut_ref(&mut self) -> &mut [MatrixImage<T>; 4] {
+        &mut self.data
     }
     pub fn update_rule(
-        mut self, 
-        rule_function: impl Fn(Self) -> Self,
+        &mut self, 
+        rule_function: impl Fn(&Self) -> Self,
     ) -> Self {
-        self = rule_function(self);
-        self
+        rule_function(self)
     }
 }
 
