@@ -1,11 +1,14 @@
+use core::ops::Mul;
 use matrix_graph::{
     MatrixImageBuilder,
     Channel::*,
     Neighborhood,
     traits::{
+        self,
         Matrix,
         Draw,
         DrawMultiChannel,
+        Max,
     },
     four_channel::FourChannelMatrix,
 };
@@ -33,7 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn update_rule<T: Clone + From<u8>>(multi_matrix: &FourChannelMatrix<T>) -> FourChannelMatrix<T> 
+fn update_rule<T: Clone + Default + Mul<Output=T> + Max + From<u8>>(multi_matrix: &FourChannelMatrix<T>) -> FourChannelMatrix<T> 
  where u8: From<T>
 {
     let mut mm = multi_matrix.clone();

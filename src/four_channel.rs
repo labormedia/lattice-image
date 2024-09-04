@@ -14,9 +14,11 @@ use crate::{
         MatrixError,
     },
     MatrixImage,
+    MatrixImageBuilder,
     traits::{
         self,
         Matrix,
+        Max,
     },
     Channel,
 };
@@ -27,14 +29,14 @@ use image::{
 
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct FourChannelMatrix<T>
- where T: Clone
+ where T: Clone + Mul<Output=T>
 {
     height: usize,
     width: usize,
     data: [MatrixImage<T>; 4],
 }
 
-impl<T: Clone> FourChannelMatrix<T>
+impl<T: Clone + Default + Max + Mul<Output=T>> FourChannelMatrix<T>
  where u8: From<T>
 {
     pub fn get_height(&self) -> &usize {
@@ -43,17 +45,38 @@ impl<T: Clone> FourChannelMatrix<T>
     pub fn get_width(&self) -> &usize {
         &self.width
     }
+    pub fn get_data(self) -> [MatrixImage<T>; 4] {
+        self.data
+    }
     pub fn get_data_ref(&self) -> &[MatrixImage<T>; 4] {
         &self.data
     }
     pub fn get_data_mut_ref(&mut self) -> &mut [MatrixImage<T>; 4] {
         &mut self.data
     }
+    pub fn as_normals(&self) -> Self
+    {
+        let mut mm = self.clone();
+        for mut matrix in mm.get_data_mut_ref() {
+            *matrix = matrix.clone()*(MatrixImageBuilder::init()
+                .with_initial_value(T::MAX)
+                .with_height_and_width(*self.get_width(),*self.get_height())
+                .build());
+        }
+        mm
+    }
     pub fn update_rule(
         &mut self, 
         rule_function: impl Fn(&Self) -> Self,
     ) -> Self {
         rule_function(self)
+    }
+    pub fn update_rule_with_coefficients<U>(
+        &mut self, 
+        rule_function: impl Fn(&Self, U) -> Self,
+        c: U,
+    ) -> Self {
+        rule_function(self, c)
     }
     fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
         if point.0 >= *self.get_width() as u32 || point.1 >= *self.get_height() as u32 { 
@@ -113,7 +136,7 @@ impl<T: Clone> FourChannelMatrix<T>
     }
 }
 
-impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> From<[MatrixImage<T>; 4]> for FourChannelMatrix<T> {
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> From<[MatrixImage<T>; 4]> for FourChannelMatrix<T> {
     fn from(value: [MatrixImage<T>; 4]) -> Self {
         let mut height = value[0].get_height();
         let mut width = value[1].get_width();
