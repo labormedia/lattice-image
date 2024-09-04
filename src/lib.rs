@@ -23,6 +23,7 @@ pub enum Channel {
     Alpha,
 }
 
+#[derive(Clone, Copy)]
 pub enum Neighborhood {
     VonNeumann,
     Moore,
