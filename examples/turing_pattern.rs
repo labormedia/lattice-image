@@ -39,10 +39,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         .with_initial_value(LatticeElement::from(0_f32))
         .with_height_and_width(size_x,size_y)
         .build();
-    let values_MAX: MatrixImage<LatticeElement<f32>> = MatrixImageBuilder::init()
+    let max_builder: MatrixImageBuilder<LatticeElement<f32>> = MatrixImageBuilder::init()
         .with_initial_value(LatticeElement::from(f32::MAX))
-        .with_height_and_width(size_x,size_y)
-        .build();
+        .with_height_and_width(size_x,size_y);
     
     let coefficients = Coefficients {
         width: size_x as f32,
@@ -68,10 +67,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     for id in 0..n_sequence {
         if id % n_step == 0 {
             let prepend = "./animation/matrix_".to_owned();
-            let matrix_to_drawU = matrixU.clone()*values_MAX.clone();
-            let matrix_to_drawV = matrixV.clone()*values_MAX.clone();
+            let matrix_to_drawU = max_builder.build()*matrixU.clone();
+            let matrix_to_drawV = max_builder.build()*matrixV.clone();
             let _image = matrixU
-                .draw_multi_channel(&[matrix_to_drawU, values_MAX.clone(), matrix_to_drawV, values_MAX.clone()], None)?
+                .draw_multi_channel(&[matrix_to_drawU, max_builder.build(), matrix_to_drawV, max_builder.build()], None)?
                 .save(prepend+&id.to_string()+".png")?;
         }
         
