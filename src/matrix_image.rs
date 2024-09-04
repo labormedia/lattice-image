@@ -28,7 +28,7 @@ pub struct MatrixImage<T>
     data: Vec<T>,
 }
 
-impl<T: Clone + Debug> Display for MatrixImage<T> {
+impl<T: Clone + Debug + Mul<Output=T>> Display for MatrixImage<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut fmt_accumulator = String::new();
         let mut cursor = 0;
@@ -78,7 +78,7 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
     }
 }
 
-impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> MatrixImage<T> {
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> MatrixImage<T> {
     pub fn get_lattice_neighborhood<U: Into<i64>>(&self, point: (U, U), distance: usize, hood_type: Neighborhood) -> Vec<(u32, u32)> {
         let distance = distance as i64;
         let (point_x, point_y): (i64, i64) = (point.0.into(), point.1.into());
@@ -155,7 +155,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         Ok(sum - T::default())
     }
     
-        pub fn sub_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+    pub fn sub_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
         let point_value = self.get_point_value(point)?;
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
@@ -204,13 +204,13 @@ impl<T: Clone> Matrix<T> for MatrixImage<T> {
 }
 
 
-impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> Draw<T> for MatrixImage<T> 
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> Draw<T> for MatrixImage<T> 
  where u8: From<T> {}
 
-impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> DrawMultiChannel<T> for MatrixImage<T> 
+impl<T: Clone + Default + Debug + Div<Output=T> + Mul<Output=T> + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + traits::Max + From<u8> + PartialEq + PartialOrd> DrawMultiChannel<T> for MatrixImage<T> 
  where u8: From<T> {}
 
-impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd> Optimal<T> for MatrixImage<T> {
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> Optimal<T> for MatrixImage<T> {
     fn optimal_peer(
         &self, 
         self_point: (u32, u32), 
