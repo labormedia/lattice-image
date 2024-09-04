@@ -13,12 +13,14 @@ use crate::{
         self,
         MatrixError,
     },
+    Neighborhood,
     MatrixImage,
     MatrixImageBuilder,
     traits::{
         self,
         Matrix,
         Max,
+        Optimal,
     },
     Channel,
 };
@@ -156,3 +158,25 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     }
 }
 
+impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> Optimal<T> for FourChannelMatrix<T> 
+ where u8: From<T>
+{
+    fn optimal_peer(
+        &self, 
+        self_point: (u32, u32), 
+        hood_size: usize, 
+        hood_type: Neighborhood, 
+        objective: impl Fn(&Self, (u32, u32), (u32, u32)) -> T 
+    ) -> Option<((u32, u32), T)>
+    {
+        let hood = self.get_data_ref()[0].get_lattice_neighborhood(self_point, hood_size, hood_type);
+        hood
+            .into_iter()
+            .map( |neighbor| {
+                (neighbor, objective(self, self_point, neighbor))
+            })
+            .max_by(|a, b| {
+                a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
+            })
+    }
+}
