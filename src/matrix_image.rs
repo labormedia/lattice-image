@@ -73,6 +73,12 @@ impl<T: Clone + Default + traits::Max> MatrixImageBuilder<T> {
         self.initial_value = value;
         self
     }
+    pub fn with_generator(mut self, generator: impl Fn() -> T) -> Self {
+        for i in 0..(self.template.width*self.template.height) {
+            self.template.data[i] = generator();
+        }
+        self
+    }
     pub fn build(&self) -> MatrixImage<T> {
         self.template.clone()
     }
