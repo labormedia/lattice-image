@@ -179,4 +179,23 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
             })
     }
+    fn optimal_peer_with_coefficients<U: Copy>(
+        &self, 
+        self_point: (u32, u32), 
+        hood_size: usize, 
+        hood_type: Neighborhood, 
+        objective: impl Fn(&Self, (u32, u32), (u32, u32), U) -> T,
+        c: U,
+    ) -> Option<((u32, u32), T)>
+    {
+        let hood = self.get_data_ref()[0].get_lattice_neighborhood(self_point, hood_size, hood_type);
+        hood
+            .into_iter()
+            .map( |neighbor| {
+                (neighbor, objective(self, self_point, neighbor, c))
+            })
+            .max_by(|a, b| {
+                a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
+            })
+    }
 }
