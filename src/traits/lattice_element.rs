@@ -41,6 +41,13 @@ impl Div for LatticeElement<f32> {
     }
 }
 
+impl Div for LatticeElement<f64> {
+    type Output = Self;
+    fn div(self, value: Self) -> Self {
+        Self(self.0 / value.0)
+    }
+}
+
 impl<T: Div + Mul<Output=T> + Add + Sub + PartialEq + PartialOrd> Mul for LatticeElement<T> {
     type Output = Self;
     fn mul(self, value: Self) -> Self {
