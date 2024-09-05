@@ -14,6 +14,10 @@ impl Max for f32 {
     const MAX: f32 = f32::MAX;
 }
 
+impl Max for f64 {
+    const MAX: f64 = f64::MAX;
+}
+
 impl Max for i32 {
     const MAX: i32 = i32::MAX;
 }
