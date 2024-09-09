@@ -11,11 +11,11 @@ use matrix_graph::{
         Max,
     },
     four_channel::FourChannelMatrix,
+    error,
 };
-use std::error::Error;
 use rand::Rng;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let (size_x, size_y): (usize, usize) = (100,100);
     let mut matrix_builder = MatrixImageBuilder::<u8>::init().with_height_and_width(size_x,size_y);
     let initial_channels = [

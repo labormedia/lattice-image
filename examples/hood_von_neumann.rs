@@ -6,10 +6,10 @@ use matrix_graph::{
         Matrix,
         Draw,
     },
+    error,
 };
-use std::error::Error;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let mut matrix = MatrixImageBuilder::<u8>::init().with_height_and_width(100,100).build();
     let center: (u32, u32) = (50,50);
     let neighborhood = matrix.get_lattice_neighborhood(center, 3, Neighborhood::VonNeumann);

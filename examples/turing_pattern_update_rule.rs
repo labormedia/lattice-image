@@ -10,8 +10,8 @@ use matrix_graph::{
         LatticeElement,
     },
     four_channel::FourChannelMatrix,
+    error,
 };
-use std::error::Error;
 
 /// Struct for the parameter coefficients of the model.
 struct Coefficients {
@@ -29,7 +29,7 @@ struct Coefficients {
     Dv: f32,
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let n_sequence = 7500;
     let n_step = 15;
     let (size_x, size_y) = (100,100);

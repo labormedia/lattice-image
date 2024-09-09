@@ -7,11 +7,11 @@ use matrix_graph::{
         LatticeElement,
         Optimal,
     },
+    error,
 };
-use std::error::Error;
 use rand::Rng;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let size = (5,5);
     let mut rng = rand::thread_rng();
     let mut matrix: MatrixImage<u32> = MatrixImageBuilder::init()

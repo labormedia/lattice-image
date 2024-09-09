@@ -8,8 +8,8 @@ use matrix_graph::{
         DrawMultiChannel,
         LatticeElement,
     },
+    error,
 };
-use std::error::Error;
 
 /// Struct for the parameter coefficients of the model.
 struct Coefficients {
@@ -27,7 +27,7 @@ struct Coefficients {
     Dv: f32,
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let n_sequence = 50000;
     let n_step = 100;
     let (size_x, size_y) = (100,100);
@@ -84,7 +84,7 @@ fn reaction_diffusion(
     matrixU: MatrixImage<LatticeElement<f32>>, 
     matrixV: MatrixImage<LatticeElement<f32>>,
     c: &Coefficients,
-    ) -> Result<(MatrixImage<LatticeElement<f32>>, MatrixImage<LatticeElement<f32>>), Box<dyn Error>> {
+    ) -> Result<(MatrixImage<LatticeElement<f32>>, MatrixImage<LatticeElement<f32>>), error::MatrixError> {
     //let size_x = matrixU.get_width();
     //let size_y = matrixU.get_height();
     let mut new_matrixU = matrixU.clone();
