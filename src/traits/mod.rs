@@ -1,10 +1,7 @@
-use std::error::Error;
 use core::{
     fmt::Debug,
-    cmp,
     ops::{
         Div,
-        Mul,
         Add,
         Sub,
     },
@@ -21,7 +18,6 @@ use crate::{
 };
 
 pub mod from;
-pub use from::*;
 
 pub mod lattice_element;
 pub use lattice_element::*;
@@ -38,16 +34,16 @@ pub trait Matrix<T>
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     /// Checks for bounds within the size of the matrix
-    fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
+    fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, error::MatrixError> {
         if point.0 >= self.get_width() as u32 || point.1 >= self.get_height() as u32 { 
-            Err(Box::new(error::MatrixError::Overflow))
+            Err(error::MatrixError::Overflow)
         } else {
             Ok(true)
         }
     }
-    fn get_point_value<U: Into<u32>>(&self, point: (U,U)) -> Result<T, Box<dyn error::Error>>;
+    fn get_point_value<U: Into<u32>>(&self, point: (U,U)) -> Result<T, error::MatrixError>;
     fn get_absolute_point_data(&self, absolute_point: usize) -> T;
-    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), Box<dyn error::Error>> {
+    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), error::MatrixError> {
         let x: u32 = (absolute_point % self.get_width()) as u32;
         let y: u32 = absolute_point as u32 / self.get_width() as u32; 
         self.check_point_bounds((x,y))?;
@@ -55,11 +51,11 @@ pub trait Matrix<T>
     }
     /// Transforms a 2D point reference point into a 1D point correlated with the 
     /// matrix raw data and its width/height.
-    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn Error>> {
+    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, error::MatrixError> {
         self.check_point_bounds(point)?;
         Ok( (point.0 + point.1 * (self.get_width() as u32)) as usize )   
     }
-    fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), Box<dyn error::Error>>;
+    fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), error::MatrixError>;
 }
 
 pub trait Draw<T>: Matrix<T> 
@@ -67,7 +63,7 @@ where
  T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd,
  u8: From<T> 
 {
-    fn draw(&self, color: Channel) -> Result<RgbaImage, Box<dyn Error>> {
+    fn draw(&self, color: Channel) -> Result<RgbaImage, error::MatrixError> {
         let mut image = RgbaImage::new(self.get_width().try_into()?, self.get_height().try_into()?);
         
         for point in 0..(self.get_width()*self.get_height()) {
@@ -99,7 +95,7 @@ pub trait DrawMultiChannel<T>: Matrix<T>
  T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd,
  u8: From<T> 
 {
-    fn draw_multi_channel(&self, channels: &[MatrixImage<T>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
+    fn draw_multi_channel(&self, channels: &[MatrixImage<T>; 4], channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, error::MatrixError> {
         let mut length_holder = 0_usize;
         let have_same_length = match channels.as_slice() {
             [head, tail @ ..] => tail.iter().all(|matrix| {

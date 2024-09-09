@@ -1,4 +1,4 @@
-mod error;
+pub mod error;
 pub mod traits;
 pub mod four_channel;
 pub mod matrix_image;
@@ -11,7 +11,6 @@ use traits::{
     Matrix,
     Draw,
     DrawMultiChannel,
-    Max,
     Optimal,
 };
 

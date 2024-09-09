@@ -1,4 +1,3 @@
-use std::error::Error;
 use core::{
     fmt::Debug,
     ops::{
@@ -59,7 +58,7 @@ impl<T: Clone + Default + Max + Mul<Output=T>> FourChannelMatrix<T>
     pub fn as_normals(&self) -> Self
     {
         let mut mm = self.clone();
-        for mut matrix in mm.get_data_mut_ref() {
+        for matrix in mm.get_data_mut_ref() {
             *matrix = matrix.clone()*(MatrixImageBuilder::init()
                 .with_initial_value(T::MAX)
                 .with_height_and_width(*self.get_width(),*self.get_height())
@@ -80,27 +79,26 @@ impl<T: Clone + Default + Max + Mul<Output=T>> FourChannelMatrix<T>
     ) -> Self {
         rule_function(self, c)
     }
-    fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, Box<dyn Error>> {
+    fn check_point_bounds(&self, point: (u32, u32)) -> Result<bool, MatrixError> {
         if point.0 >= *self.get_width() as u32 || point.1 >= *self.get_height() as u32 { 
-            Err(Box::new(error::MatrixError::Overflow))
+            Err(error::MatrixError::Overflow)
         } else {
             Ok(true)
         }
     }
-    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), Box<dyn error::Error>> {
+    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), MatrixError> {
         let x: u32 = (absolute_point % self.get_width()) as u32;
         let y: u32 = absolute_point as u32 / *self.get_width() as u32; 
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    pub fn multi_channel_image(&self, channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, Box<dyn Error>> {
+    pub fn multi_channel_image(&self, channel_order:Option<&[Channel; 4]>) -> Result<RgbaImage, MatrixError> {
         let mut length_holder = 0_usize;
         let have_same_length = match self.get_data_ref() {
             [head, tail @ ..] => tail.iter().all(|matrix| {
                 length_holder = head.get_data().len();  // holds the last length value
                 head.get_data().len() == matrix.get_data().len()
             }),
-            [_,_,_,_] => false,
         };
         assert!(have_same_length, "Matrices should have the same length.");
         let matrix_order: Vec<MatrixImage<T>> = if let Some(channel_order) = channel_order {
@@ -140,8 +138,8 @@ impl<T: Clone + Default + Max + Mul<Output=T>> FourChannelMatrix<T>
 
 impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> From<[MatrixImage<T>; 4]> for FourChannelMatrix<T> {
     fn from(value: [MatrixImage<T>; 4]) -> Self {
-        let mut height = value[0].get_height();
-        let mut width = value[1].get_width();
+        let height = value[0].get_height();
+        let width = value[1].get_width();
         let have_same_length = match value {
             [ref head, ref tail @ ..] => tail.iter().all(|matrix| {
                 head.get_data().len() == matrix.get_data().len()

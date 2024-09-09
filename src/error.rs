@@ -1,26 +1,44 @@
 use core::{
+    num::TryFromIntError,
     fmt::{
         Display,
         Formatter,
         self,
     },
 };
-pub use std::error::Error;
+use image::error::ImageError;
 
 #[derive(Debug)]
 pub enum MatrixError {
     Overflow,
-    //NotImplemented,
+    TryFromIntError(TryFromIntError),
+    ImageError(ImageError),
 }
 
-impl Error for MatrixError {}
+impl From<TryFromIntError> for MatrixError {
+    fn from(value: TryFromIntError) -> Self {
+        Self::TryFromIntError(value)
+    }
+}
+
+impl From<ImageError> for MatrixError {
+    fn from(value: ImageError) -> Self {
+        Self::ImageError(value)
+    }
+}
 
 impl Display for MatrixError {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
             Self::Overflow => {
                 write!(f, "Overflow Image from Matrix")
-            }
+            },
+            Self::TryFromIntError(e) => {
+                write!(f, "TryFromIntError {e}")
+            },
+            Self::ImageError(e) => {
+                write!(f, "ImageError {e}")
+            },
         }
     }
 }

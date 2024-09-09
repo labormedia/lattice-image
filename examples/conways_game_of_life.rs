@@ -7,14 +7,14 @@ use matrix_graph::{
         Matrix,
         Draw,
     },
+    error,
 };
-use std::error::Error;
 use rand::Rng;
 
 const ALIVE_VALUE: u8 = 255;
 const DEAD_VALUE: u8 = 0;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let mut rng = rand::thread_rng();
     let n_sequence = 100;
     let (size_x, size_y): (usize, usize) = (100,100);
@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn still_image(matrix: MatrixImage<u8>) -> Result<MatrixImage<u8>, Box<dyn Error>> {
+fn still_image(matrix: MatrixImage<u8>) -> Result<MatrixImage<u8>, error::MatrixError> {
     let mut new_matrix = MatrixImageBuilder::init().with_height_and_width(matrix.get_width(),matrix.get_height()).build();
     let size_x = matrix.get_height();
     let size_y = matrix.get_width();
@@ -66,7 +66,7 @@ fn still_image(matrix: MatrixImage<u8>) -> Result<MatrixImage<u8>, Box<dyn Error
     Ok(new_matrix)
 }
 
-fn count_alive_neighbors(center: (u32,u32), neighborhood: Vec<(u32,u32)>, matrix: &MatrixImage<u8>) -> Result<u32, Box<dyn Error>> {
+fn count_alive_neighbors(center: (u32,u32), neighborhood: Vec<(u32,u32)>, matrix: &MatrixImage<u8>) -> Result<u32, error::MatrixError> {
     let center_value = matrix.get_point_value(center)? as u32;
     let mut hood_values = Vec::new();
     for point in neighborhood {

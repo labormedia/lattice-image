@@ -135,7 +135,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     /// which is conveniently used to create the sum accumulator later then substracted,
     /// whatever this default value would be.
     /// The returned value is a Tuple with the sum and the length of the neighborhood evaluated.
-    pub fn hood_sum(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<(T, usize), Box<dyn error::Error>> {
+    pub fn hood_sum(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<(T, usize), error::MatrixError> {
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
         for hood_point in &neighborhood {
@@ -147,10 +147,10 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     /// Evaluates the Discrete Laplace Operator for the given point coordinates and the size of the neighborhood.
     /// Given that the Neighborhood includes the value of the point being evaluated, we need to substract it from
     /// the neighborhood summation too.
-    pub fn laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+    pub fn laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, error::MatrixError> {
         self.sum_first_laplace_operator(point, size, hood_type)
     }
-    pub fn sum_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+    pub fn sum_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, error::MatrixError> {
         let point_value = self.get_point_value(point)?;
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
@@ -161,7 +161,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         Ok(sum - T::default())
     }
     
-    pub fn sub_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, Box<dyn error::Error>> {
+    pub fn sub_first_laplace_operator(&self, point: (u32, u32), size: usize, hood_type: Neighborhood) -> Result<T, error::MatrixError> {
         let point_value = self.get_point_value(point)?;
         let neighborhood = self.get_lattice_neighborhood(point, size, hood_type);
         let mut sum = T::default();  // initial value which is substracted afterwards.
@@ -185,24 +185,24 @@ impl<T: Clone> Matrix<T> for MatrixImage<T> {
     fn get_height(&self) -> usize {
         self.height
     }
-    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), Box<dyn error::Error>> {
+    fn into_2d_point(&self, absolute_point: usize) -> Result<(u32, u32), error::MatrixError> {
         let x: u32 = (absolute_point % self.get_width()) as u32;
         let y: u32 = absolute_point as u32 / self.get_width() as u32; 
         self.check_point_bounds((x,y))?;
         Ok((x,y))
     }
-    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, Box<dyn error::Error>> {
+    fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, error::MatrixError> {
         self.check_point_bounds(point)?;
         Ok( (point.0 + point.1 * (self.get_width() as u32)) as usize )
     }
     fn get_absolute_point_data(&self, absolute_point: usize) -> T {
         self.data[absolute_point].clone()
     }
-    fn get_point_value<U: Into<u32>>(&self, point: (U,U)) -> Result<T, Box<dyn error::Error>>  {
+    fn get_point_value<U: Into<u32>>(&self, point: (U,U)) -> Result<T, error::MatrixError>  {
         let absolute_point: usize = self.into_absolute_point((point.0.into(), point.1.into()))?;
         Ok(self.data[absolute_point].clone())
     }
-    fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), Box<dyn error::Error>> {
+    fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), error::MatrixError> {
         let absolute_point: usize = self.into_absolute_point((point.0.into(), point.1.into()))?;
         self.data[absolute_point] = value.into();
         Ok(())

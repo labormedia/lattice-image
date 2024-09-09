@@ -8,10 +8,10 @@ use matrix_graph::{
         DrawMultiChannel,
         LatticeElement,
     },
+    error,
 };
-use std::error::Error;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let n_sequence = 10;
     let (size_x, size_y) = (100,100);
     let hood_distance = 10;
@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn laplace_operator(matrix: MatrixImage<LatticeElement<i32>>) -> Result<MatrixImage<LatticeElement<i32>>, Box<dyn Error>> {
+fn laplace_operator(matrix: MatrixImage<LatticeElement<i32>>) -> Result<MatrixImage<LatticeElement<i32>>, error::MatrixError> {
     let size_x = matrix.get_height();
     let size_y = matrix.get_width();
     let mut new_matrix = matrix.clone();

@@ -6,11 +6,11 @@ use matrix_graph::{
         Matrix,
         Draw,
     },
+    error,
 };
-use std::error::Error;
 use rand::Rng;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let (size_x, size_y): (usize, usize) = (100,100);
     let mut matrix = MatrixImageBuilder::<u8>::init().with_height_and_width(size_x,size_y).with_generator(|| { rand::thread_rng().gen::<u8>() }).build();
     

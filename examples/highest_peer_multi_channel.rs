@@ -9,12 +9,12 @@ use matrix_graph::{
         LatticeElement,
         Optimal,
     },
+    error,
 };
-use std::error::Error;
 
 type Atom = LatticeElement<f32>;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let size = (5,5);
     let mut matrix_channels: MatrixImageBuilder<Atom> = MatrixImageBuilder::init()
         .with_height_and_width(size.0, size.1);

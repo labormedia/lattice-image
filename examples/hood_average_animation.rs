@@ -8,11 +8,11 @@ use matrix_graph::{
         Draw,
         LatticeElement,
     },
+    error,
 };
-use std::error::Error;
 use rand::Rng;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let mut rng = rand::thread_rng();
     let n_sequence = 10;
     let (size_x, size_y) = (100,100);
@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn still_image(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, Box<dyn Error>> {
+fn still_image(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<LatticeElement<u32>>, error::MatrixError> {
     let size_x = matrix.get_height();
     let size_y = matrix.get_width();
     let mut recipient_matrix = matrix.clone();
@@ -53,13 +53,9 @@ fn still_image(matrix: MatrixImage<LatticeElement<u32>>) -> Result<MatrixImage<L
             for hood_point in &neighborhood {
                 let value = recipient_matrix.get_point_value(*hood_point)?;
                 sum = sum + value;
-                #[cfg(debug_assertions)]
-                println!("center {center:?} hood_point {hood_point:?} value {value:?} sum {sum:?}");
             }
             let hood_size = LatticeElement(neighborhood.len() as u32);
             let average = sum / hood_size;
-            #[cfg(debug_assertions)]
-            println!("sum {sum:?} hood_size {hood_size:?} average {average:?}");
             let _ = recipient_matrix.edit_point(center, average)?;
         }
     }

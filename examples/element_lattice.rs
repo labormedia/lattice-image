@@ -7,14 +7,14 @@ use matrix_graph::{
         Draw,
         LatticeElement,
     },
+    error,
 };
-use std::error::Error;
 use rand::Rng;
 
 type Point = (u32, u32);
 type MatrixSize = (usize, usize);
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), error::MatrixError> {
     let mut rng = rand::thread_rng();
     let (size_x, size_y): MatrixSize = (100,100);
     let mut matrix = MatrixImageBuilder::<LatticeElement<f32>>::init().with_height_and_width(size_x,size_y).build();
