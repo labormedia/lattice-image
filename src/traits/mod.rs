@@ -1,6 +1,6 @@
 use std::error::Error;
-use core::fmt::Debug;
 use core::{
+    fmt::Debug,
     cmp,
     ops::{
         Div,
