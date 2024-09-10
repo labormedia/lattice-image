@@ -6,6 +6,7 @@ use core::{
         Sub,
     },
 };
+use alloc::vec::Vec;
 use image::{
     Rgba,
     RgbaImage,
