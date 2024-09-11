@@ -26,6 +26,9 @@ pub use lattice_element::*;
 pub mod max;
 pub use max::*;
 
+pub mod model;
+pub use model::Model;
+
 pub trait Matrix<T>
 //where
 // T: Clone + Debug + Default + Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + PartialOrd
