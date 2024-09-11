@@ -176,9 +176,10 @@ where
     ) -> Option<((u32, u32), (T, V))>;
 }
 
-pub trait OptimalModel<T>: Optimal<T> 
+pub trait OptimalModel<T>: Optimal<T> + Model
 where
  T: PartialOrd
 {
-    fn optimal_model<U: Model>(model: U) -> U::Objective;
+    fn optimal_model(&self) -> Self::Objective;
+    fn optimal_update(&self) -> Self;
 }
