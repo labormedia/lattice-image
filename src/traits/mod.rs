@@ -176,10 +176,20 @@ where
     ) -> Option<((u32, u32), (T, V))>;
 }
 
-pub trait OptimalModel<T>: Optimal<T> + Model
+///   Based on the Model trait, OptimalModel<T, U> extends the model to
+///   types that implements Optimal<T>, where T implements PartialOrd
+///   and which elements can be compared for optimizing the Objective.
+///   The architecture intent is to include the U type within the
+///   data structure and implement these functions based on the optimal
+///   values returned in the Optimal<T> implementation for generic type U.
+pub trait OptimalModel<T, U>: Model
 where
- T: PartialOrd
+ T: PartialOrd,
+ U: Optimal<T>
 {
-    fn optimal_model(&self) -> Self::Objective;
-    fn optimal_update(&self) -> Self;
+    ///   Behaviour based on the Objective defined in the Model trait implementation.
+    fn optimal_model(&self) ->  Self::Objective;
+    ///   Recursive implementation for type U, which is intended to be included
+    ///   in the data structure for which this trait is implemented.
+    fn optimal_update(&self) -> U;
 }
