@@ -163,4 +163,12 @@ where
         objective: impl Fn(&Self, (u32, u32), (u32, u32), U) -> T,
         c: U,
     ) -> Option<((u32, u32), T)>;
+    fn optimal_peer_internal_values_with_coefficients<U: Copy, V>(
+        &self, 
+        self_point: (u32, u32), 
+        hood_size: usize, 
+        hood_type: Neighborhood, 
+        objective: impl Fn(&Self, (u32, u32), (u32, u32), U) -> (T, V),
+        c: U,
+    ) -> Option<((u32, u32), (T, V))>;
 }
