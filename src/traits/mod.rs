@@ -194,8 +194,12 @@ where
  T: PartialOrd,
  U: Optimal<T>
 {
-    ///   Behaviour based on the Objective defined in the Model trait implementation.
-    fn optimal_model(&self) ->  Self::Objective;
+    ///   Behaviour for pair of elements based on the Objective type defined in the Model trait implementation.
+    fn optimal_model(
+        &self,
+        x: (u32, u32), 
+        y: (u32, u32),
+    ) ->  Self::Objective;
     ///   Recursive implementation for type U, which is intended to be included
     ///   in the data structure for which this trait is implemented.
     fn optimal_update(&self) -> U;
