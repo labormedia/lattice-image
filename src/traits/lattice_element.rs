@@ -10,7 +10,7 @@ use core::{
 };
 use super::Max;
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Eq)]
 pub struct LatticeElement<T: Div + Mul + Add + PartialEq + PartialOrd>(pub T);
 
 /*impl<T: Div<Output = T> + Mul + Add + Sub> Div for LatticeElement<T> {
@@ -88,5 +88,11 @@ impl<T: Div + Mul + Add + PartialEq + PartialOrd> PartialEq for LatticeElement<T
 impl<T: Div + Mul + Add + PartialEq + PartialOrd> PartialOrd for LatticeElement<T> {
     fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
         self.0.partial_cmp(&other.0)
+    }
+}
+
+impl<T: Div + Mul + Add + PartialEq + PartialOrd + Eq + Ord> Ord for LatticeElement<T> {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        self.0.cmp(&other.0)
     }
 }
