@@ -202,5 +202,5 @@ where
     ) ->  Self::Objective;
     ///   Recursive implementation for type U, which is intended to be included
     ///   in the data structure for which this trait is implemented.
-    fn optimal_update(&self) -> U;
+    fn optimal_update(&self) -> &U;
 }
