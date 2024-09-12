@@ -4,5 +4,5 @@
 pub trait Model {
     type Objective;
     fn exchange_network<C>(&mut self, c: C) -> &mut Self;
-    fn objective(&self, x: (u32, u32)) -> Self::Objective;
+    fn optimal_objective(&self, x: (u32, u32)) -> Self::Objective;
 }
