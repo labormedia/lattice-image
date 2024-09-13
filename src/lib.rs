@@ -10,6 +10,9 @@ pub use matrix_image::{
     MatrixImage,
 };
 
+#[cfg(feature = "hasher")]
+pub mod hasher;
+
 use traits::{
     Matrix,
     Draw,
