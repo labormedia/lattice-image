@@ -277,7 +277,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
             })
     }
-    fn optimal_peer_internal_values_with_coefficients<U: Copy, V>(
+    fn optimal_peer_internal_values_with_coefficients<U, V>(
         &self, 
         self_point: (u32, u32), 
         hood_size: usize, 
