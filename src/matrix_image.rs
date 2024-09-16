@@ -282,8 +282,8 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
         self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &mut U) -> (T, V),
-        c: &mut U,
+        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
+        c: &U,
     ) -> Option<((u32, u32), (T, V))>
     {
         let hood = self.get_lattice_neighborhood(self_point, hood_size, hood_type);
