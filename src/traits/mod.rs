@@ -178,8 +178,8 @@ where
         self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), U) -> (T, V),
-        c: U,
+        objective: impl Fn(&Self, (u32, u32), (u32, u32), &mut U) -> (T, V),
+        c: &mut U,
     ) -> Option<((u32, u32), (T, V))>;
 }
 
