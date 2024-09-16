@@ -3,7 +3,7 @@ use alloc::collections::btree_set::{
     Iter,
 };
 
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug)]
 pub struct ExchangeSet<T> {
     set: BTreeSet<T>
 }
