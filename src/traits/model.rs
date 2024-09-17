@@ -6,4 +6,5 @@ pub trait Model {
     type Coefficients;
     fn exchange_network(&mut self, c: Self::Coefficients) -> &mut Self;
     fn optimal_objective(&self, x: (u32, u32)) -> Self::Objective;
+    // TODO: add fn optimal_obective for a custom hood.
 }

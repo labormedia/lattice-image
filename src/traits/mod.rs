@@ -57,7 +57,7 @@ pub trait Matrix<T>
     /// matrix raw data and its width/height.
     fn into_absolute_point(&self, point: (u32, u32)) -> Result<usize, error::MatrixError> {
         self.check_point_bounds(point)?;
-        Ok( (point.0 + point.1 * (self.get_width() as u32)) as usize )   
+        Ok( (point.0 + point.1 * (self.get_width() as u32)) as usize )
     }
     fn edit_point<U: Into<u32>>(&mut self, point: (U, U), value: impl Into<T>) -> Result<(), error::MatrixError>;
 }
@@ -178,6 +178,13 @@ where
         self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
+        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
+        c: &U,
+    ) -> Option<((u32, u32), (T, V))>;
+    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V>(
+        &self, 
+        self_point: (u32, u32), 
+        hood: Vec<(u32, u32)>, 
         objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
         c: &U,
     ) -> Option<((u32, u32), (T, V))>;
