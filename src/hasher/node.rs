@@ -1,7 +1,6 @@
 use crate::hasher::{
     CipherBlock,
     Blake2b,
-    data_hash,
     hash_visit,
     U32,
 };
