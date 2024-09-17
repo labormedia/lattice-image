@@ -29,5 +29,7 @@ where
     pub fn iter(&mut self) -> Iter<'_, T> {
         self.set.iter()
     }
-
+    pub fn contains(&self, value: &T) -> bool {
+        self.set.contains(value)
+    }
 }
