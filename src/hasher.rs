@@ -9,6 +9,9 @@ pub use node::Node;
 mod exchange_set;
 pub use exchange_set::ExchangeSet;
 
+mod exchange_map;
+pub use exchange_map::ExchangeMap;
+
 pub type CipherBlock = [u8;32];
 
 pub fn data_hash<D: Digest>(data: &[u8], output: &mut [u8]) {
