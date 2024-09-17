@@ -62,6 +62,16 @@ where T: PartialOrd,
             payload: objective.1,
         }
     }
+    pub fn get_pair_id(left: Node, right: Node) -> CipherBlock {
+        let (order_left, order_right) = if left <= right {
+            (left.clone(), right.clone())
+        } else {
+            (right.clone(), left.clone())
+        };
+        let mut output = CipherBlock::default();
+        let _ = hash_visit::<Blake2b<U32>>(order_left.get_id_ref(), order_right.get_id_ref(), &mut output);
+        output
+    }
 }
 
 impl<T, InternalValues> NodePair<T, InternalValues>
