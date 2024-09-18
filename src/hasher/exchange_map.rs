@@ -32,6 +32,12 @@ where
     pub fn contains_key(&self, key: &K) -> bool {
         self.map.contains_key(key)
     }
+    pub fn len() {
+        self.set.len()
+    }
+    pub fn is_empty() {
+        self.set.len() == 0
+    }
 }
 
 #[cfg(test)]
