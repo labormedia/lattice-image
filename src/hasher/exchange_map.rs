@@ -33,10 +33,10 @@ where
         self.map.contains_key(key)
     }
     pub fn len(&self) {
-        self.set.len()
+        self.map.len()
     }
     pub fn is_empty(&self) -> bool {
-        self.set.len() == 0
+        self.map.len() == 0
     }
 }
 
