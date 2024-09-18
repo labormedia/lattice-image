@@ -35,7 +35,7 @@ where
     pub fn len() {
         self.set.len()
     }
-    pub fn is_empty() {
+    pub fn is_empty() -> bool {
         self.set.len() == 0
     }
 }
