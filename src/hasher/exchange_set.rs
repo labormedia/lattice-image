@@ -32,10 +32,10 @@ where
     pub fn contains(&self, value: &T) -> bool {
         self.set.contains(value)
     }
-    pub fn len() {
+    pub fn len(&self) {
         self.set.len()
     }
-    pub fn is_empty() -> bool {
+    pub fn is_empty(&self) -> bool {
         self.set.len() == 0
     }
 }
