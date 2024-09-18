@@ -32,7 +32,7 @@ where
     pub fn contains_key(&self, key: &K) -> bool {
         self.map.contains_key(key)
     }
-    pub fn len(&self) {
+    pub fn len(&self) -> usize {
         self.map.len()
     }
     pub fn is_empty(&self) -> bool {
