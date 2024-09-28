@@ -4,6 +4,7 @@ extern crate alloc;
 pub mod error;
 pub mod traits;
 pub mod four_channel;
+pub mod n_channel;
 pub mod matrix_image;
 pub use matrix_image::{
     MatrixImageBuilder,
