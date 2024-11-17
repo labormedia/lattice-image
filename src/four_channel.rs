@@ -157,7 +157,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     }
 }
 
-impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> Optimal<T> for FourChannelMatrix<T> 
+impl<'a, T: 'a + Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + Sub<Output=T> + Mul<Output=T> + PartialOrd> Optimal<'a, T> for FourChannelMatrix<T> 
  where u8: From<T>
 {
     fn optimal_peer(
@@ -215,13 +215,13 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
             })
     }
-    fn optimal_peer_internal_values_with_coefficients<U, V>(
-        &self, 
+    fn optimal_peer_internal_values_with_coefficients<U: 'a, V>(
+        &'a self, 
         self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
-        c: &U,
+        objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a U) -> (T, V),
+        c: &'a U,
     ) -> Option<((u32, u32), (T, V))>
     {
         let hood = self.get_data_ref()[0].get_lattice_neighborhood(self_point, hood_size, hood_type);
@@ -230,23 +230,23 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
             .map( |neighbor| {
                 (neighbor, objective(self, self_point, neighbor, c))
             })
-            .max_by(|a, b| {
+            .max_by(move |a, b| {
                 a.1.0.partial_cmp(&b.1.0).expect("PartialOrd not implemented for type T.")
             })
     }
-    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V>(
-        &self, 
+    fn optimal_peer_internal_values_with_coefficients_and_hood<U: 'a, V>(
+        &'a self, 
         self_point: (u32, u32), 
         hood: Vec<(u32, u32)>, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
-        c: &U,
+        objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a U) -> (T, V),
+        c: &'a U,
     ) -> Option<((u32, u32), (T, V))> {
         hood
             .into_iter()
             .map( |neighbor| {
                 (neighbor, objective(self, self_point, neighbor, c))
             })
-            .max_by(|a, b| {
+            .max_by(move |a, b| {
                 a.1.0.partial_cmp(&b.1.0).expect("PartialOrd not implemented for type T.")
             })
     }

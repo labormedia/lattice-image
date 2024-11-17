@@ -144,9 +144,10 @@ pub trait DrawMultiChannel<T>: Matrix<T>
     }
 }
 
-pub trait Optimal<T>
+pub trait Optimal<'a, T>
 where
- T: PartialOrd
+ T: PartialOrd,
+ Self: 'a
 {
     /// Receives a point, neighborhood size and Neighborhood type, together with an objective function.
     /// Evaluates all pair of points from the reference to the neighborhood, and returns the point and evaluation T that maximizes
@@ -173,20 +174,20 @@ where
         objective: impl Fn(&Self, (u32, u32), (u32, u32), U) -> T,
         c: U,
     ) -> Option<((u32, u32), T)>;
-    fn optimal_peer_internal_values_with_coefficients<U, V>(
-        &self, 
+    fn optimal_peer_internal_values_with_coefficients<U: 'a, V>(
+        &'a self, 
         self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
-        c: &U,
+        objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a U) -> (T, V),
+        c: &'a U,
     ) -> Option<((u32, u32), (T, V))>;
-    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V>(
-        &self, 
+    fn optimal_peer_internal_values_with_coefficients_and_hood<U: 'a, V>(
+        &'a self, 
         self_point: (u32, u32), 
         hood: Vec<(u32, u32)>, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
-        c: &U,
+        objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a U) -> (T, V),
+        c: &'a U,
     ) -> Option<((u32, u32), (T, V))>;
 }
 
@@ -196,10 +197,10 @@ where
 ///   The architecture intent is to include the U type within the
 ///   data structure and implement these functions based on the optimal
 ///   values returned in the Optimal<T> implementation for generic type U.
-pub trait OptimalModel<T, U>: Model
+pub trait OptimalModel<'a, T, U>: Model
 where
  T: PartialOrd,
- U: Optimal<T>
+ U: Optimal<'a, T>
 {
     ///   Behaviour for pair of elements based on the Objective type defined in the Model trait implementation.
     fn optimal_model(
