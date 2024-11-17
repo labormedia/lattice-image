@@ -8,6 +8,6 @@ pub trait Model {
     type Objective;
     type Coefficients;
     fn exchange_network(&mut self, c: Self::Coefficients) -> &mut Self;
-    fn optimal_objective(&self, x: (u32, u32)) -> Self::Objective;
-    fn optimal_objective_with_hood(&self, x: (u32, u32), hood: Vec<(u32, u32)>) -> Self::Objective;
+    fn optimal_objective(&mut self, x: (u32, u32)) -> Self::Objective;
+    fn optimal_objective_with_hood(&mut self, x: (u32, u32), hood: Vec<(u32, u32)>) -> Self::Objective;
 }
