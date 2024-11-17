@@ -203,7 +203,7 @@ where
 {
     ///   Behaviour for pair of elements based on the Objective type defined in the Model trait implementation.
     fn optimal_model(
-        &self,
+        &mut self,
         x: (u32, u32), 
     ) ->  Self::Objective;
     ///   Recursive implementation for type U, which is intended to be included
