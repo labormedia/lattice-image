@@ -180,7 +180,7 @@ where
         hood_size: usize, 
         hood_type: Neighborhood, 
         objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a U) -> (T, V),
-        c: &'a U,
+        c: &'a mut U,
     ) -> Option<((u32, u32), (T, V))>;
     fn optimal_peer_internal_values_with_coefficients_and_hood<U: 'a, V>(
         &'a self, 
