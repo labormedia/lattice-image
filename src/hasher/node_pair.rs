@@ -72,6 +72,13 @@ where T: PartialOrd,
         let _ = hash_visit::<Blake2b<U32>>(order_left.get_id_ref(), order_right.get_id_ref(), &mut output);
         output
     }
+    pub fn get_pair_order(left: Node, right: Node) -> (Node, Node) {
+        if left <= right {
+            (left.clone(), right.clone())
+        } else {
+            (right.clone(), left.clone())
+        }
+    }
 }
 
 impl<T, InternalValues> NodePair<T, InternalValues>
