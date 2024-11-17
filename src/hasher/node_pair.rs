@@ -95,7 +95,7 @@ where T: PartialOrd,
     pub fn get_payload_ref(&self) -> &InternalValues {
         &self.payload
     }
-    pub fn get_objective_payload(self) -> (T, InternalValues) -> {
+    pub fn get_objective_payload(self) -> (T, InternalValues) {
         (self.objective, self.payload)
     }
 }
