@@ -183,13 +183,15 @@ where
     ) -> Option<((u32, u32), (T, V))>
     where 
         F: for<'a> Fn(&'a Self, (u32, u32), (u32, u32), &'a mut U) -> (T, V),;
-    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V>(
+    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V, F>(
         &self, 
         self_point: (u32, u32), 
         hood: Vec<(u32, u32)>, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
-        c: &U,
-    ) -> Option<((u32, u32), (T, V))>;
+        objective: F,
+        c: &mut U,
+    ) -> Option<((u32, u32), (T, V))>
+    where 
+        F: for<'a> Fn(&'a Self, (u32, u32), (u32, u32), &'a mut U) -> (T, V),;
 }
 
 ///   Based on the Model trait, OptimalModel<T, U> extends the model to

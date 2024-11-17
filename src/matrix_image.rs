@@ -298,13 +298,16 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 a.1.0.partial_cmp(&b.1.0).expect("PartialOrd not implemented for type T.")
             })
     }
-    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V>(
+    fn optimal_peer_internal_values_with_coefficients_and_hood<U, V, F>(
         &self, 
         self_point: (u32, u32), 
         hood: Vec<(u32, u32)>, 
-        objective: impl Fn(&Self, (u32, u32), (u32, u32), &U) -> (T, V),
-        c: &U,
-    ) -> Option<((u32, u32), (T, V))> {
+        objective: F,
+        c: &mut U,
+    ) -> Option<((u32, u32), (T, V))>
+    where 
+        F: for<'a> Fn(&'a Self, (u32, u32), (u32, u32), &'a mut U) -> (T, V),
+    {
         hood
             .into_iter()
             .map( |neighbor| {
