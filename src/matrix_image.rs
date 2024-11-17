@@ -282,7 +282,7 @@ impl<'a, T: 'a + Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Out
         self_point: (u32, u32), 
         hood_size: usize, 
         hood_type: Neighborhood, 
-        objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a U) -> (T, V),
+        objective: impl Fn(&'a Self, (u32, u32), (u32, u32), &'a mut U) -> (T, V),
         c: &'a mut U,
     ) -> Option<((u32, u32), (T, V))>
     {
