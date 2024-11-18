@@ -3,6 +3,7 @@ use alloc::collections::btree_map::BTreeMap;
 use alloc::collections::btree_map::Iter;
 #[cfg(feature = "rayon")]
 use rayon::collections::btree_map::Iter;
+use rayon::iter::IntoParallelRefIterator;
 
 #[derive(Clone, Debug)]
 pub struct ExchangeMap<K, V>  {
@@ -29,7 +30,7 @@ where
         self.map.get(key)
     }
     pub fn iter(&self) -> Iter<'_, K, V> {
-        self.set.iter()
+        self.map.iter()
     }
     pub fn contains_key(&self, key: &K) -> bool {
         self.map.contains_key(key)
