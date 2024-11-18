@@ -63,7 +63,7 @@ where
         self.map.get(key)
     }
     pub fn iter(&self) -> Iter<'_, K, V> {
-        self.set.par_iter()
+        self.map.par_iter()
     }
     pub fn contains_key(&self, key: &K) -> bool {
         self.map.contains_key(key)
