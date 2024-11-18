@@ -3,6 +3,7 @@ use alloc::collections::btree_set::BTreeSet;
 use alloc::collections::btree_set::Iter;
 #[cfg(feature = "rayon")]
 use rayon::collections::btree_set::Iter;
+#[cfg(feature = "rayon")]
 use rayon::iter::IntoParallelRefIterator;
 
 #[derive(Clone, Debug)]
