@@ -11,7 +11,10 @@ pub struct ExchangeSet<T> {
 
 impl<T> ExchangeSet<T> 
 where 
+ #[cfg(not(feature = "rayon"))]
  T: PartialOrd + Ord,
+ #[cfg(feature = "rayon")]
+ T: PartialOrd + Ord + core::marker::Sync,
 {
     pub fn new() -> Self {
         ExchangeSet {
@@ -28,7 +31,10 @@ where
         self.set.get(value)
     }
     pub fn iter(&mut self) -> Iter<'_, T> {
+        #[cfg(not(feature = "rayon"))]
         self.set.iter()
+        #[cfg(feature = "rayon")]
+        self.set.par_iter()
     }
     pub fn contains(&self, value: &T) -> bool {
         self.set.contains(value)

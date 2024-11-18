@@ -11,7 +11,10 @@ pub struct ExchangeMap<K, V>  {
 
 impl<K, V> ExchangeMap<K, V> 
 where 
+ #[cfg(not(feature = "rayon"))]
  K: PartialOrd + Ord,
+ #[cfg(feature = "rayon")]
+ K: PartialOrd + Ord + core::marker::Sync, V: core::marker::Sync,
 {
     pub fn new() -> Self {
         ExchangeMap {
@@ -28,7 +31,10 @@ where
         self.map.get(key)
     }
     pub fn iter(&self) -> Iter<'_, K, V> {
-        self.map.iter()
+        #[cfg(not(feature = "rayon"))]
+        self.set.iter()
+        #[cfg(feature = "rayon")]
+        self.set.par_iter()
     }
     pub fn contains_key(&self, key: &K) -> bool {
         self.map.contains_key(key)
