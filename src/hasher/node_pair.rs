@@ -45,7 +45,8 @@ impl<T, InternalValues> Ord for NodePair<T, InternalValues> where T: PartialOrd,
 impl<T, InternalValues> NodePair<T, InternalValues>
 where T: PartialOrd,
 {
-    //! Ordered id NodePair creation.
+    //! Unique hash id NodePair creation.
+    //! The final order respect the order of parameters.
     pub fn from(left: Node, right: Node, objective: (T, InternalValues)) -> Self {
         let (order_left, order_right) = if left <= right {
             (left.clone(), right.clone())

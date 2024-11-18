@@ -1,7 +1,8 @@
-use alloc::collections::btree_map::{
-    BTreeMap,
-    Iter,
-};
+use alloc::collections::btree_map::BTreeMap;
+#[cfg(not(feature = "rayon"))]
+use alloc::collections::btree_map::Iter;
+#[cfg(feature = "rayon")]
+use rayon::collections::btree_map::Iter;
 
 #[derive(Clone, Debug)]
 pub struct ExchangeMap<K, V>  {

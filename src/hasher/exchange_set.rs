@@ -1,4 +1,10 @@
+#[cfg(not(feature = "rayon"))]
 use alloc::collections::btree_set::{
+    BTreeSet,
+    Iter,
+};
+#[cfg(feature = "rayon")]
+use rayon::collections::btree_set::{
     BTreeSet,
     Iter,
 };

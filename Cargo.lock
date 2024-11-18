@@ -479,6 +479,7 @@ dependencies = [
  "blake2",
  "image",
  "rand",
+ "rayon",
 ]
 
 [[package]]
