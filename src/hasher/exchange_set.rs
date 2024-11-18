@@ -1,13 +1,8 @@
+use alloc::collections::btree_set::BTreeSet;
 #[cfg(not(feature = "rayon"))]
-use alloc::collections::btree_set::{
-    BTreeSet,
-    Iter,
-};
+use alloc::collections::btree_set::Iter;
 #[cfg(feature = "rayon")]
-use rayon::collections::btree_set::{
-    BTreeSet,
-    Iter,
-};
+use rayon::collections::btree_set::Iter;
 
 #[derive(Clone, Debug)]
 pub struct ExchangeSet<T> {
