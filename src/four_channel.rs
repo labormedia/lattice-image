@@ -245,6 +245,7 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
     ) -> Option<((u32, u32), (T, V))> 
     where 
         F: for<'a> Fn(&'a Self, (u32, u32), (u32, u32), &'a mut U) -> (T, V),
+        T: PartialOrd,
     {
         hood
             .into_iter()
