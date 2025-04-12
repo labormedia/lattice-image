@@ -11,3 +11,12 @@ pub trait Model {
     fn optimal_objective(&mut self, x: (u32, u32)) -> Self::Objective;
     fn optimal_objective_with_hood(&mut self, x: (u32, u32), hood: Vec<(u32, u32)>) -> Self::Objective;
 }
+
+pub trait TryModel {
+    type Objective;
+    type Coefficients;
+    type Error;
+    fn try_exchange_network(&mut self, c: Self::Coefficients) -> Result<&mut Self, Self::Error>;
+    fn try_optimal_objective(&mut self, x: (u32, u32)) -> Result<Self::Objective, Self::Error>;
+    fn try_optimal_objective_with_hood(&mut self, x: (u32, u32), hood: Vec<(u32, u32)>) -> Result<Self::Objective, Self::Error>;
+}

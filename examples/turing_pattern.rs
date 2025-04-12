@@ -8,6 +8,7 @@ use matrix_graph::{
         DrawMultiChannel,
         LatticeElement,
     },
+    Channel::*,
     error,
 };
 
@@ -42,6 +43,9 @@ fn main() -> Result<(), error::MatrixError> {
     let max_builder: MatrixImageBuilder<LatticeElement<f32>> = MatrixImageBuilder::init()
         .with_initial_value(LatticeElement::from(f32::MAX))
         .with_height_and_width(size_x,size_y);
+    let min_builder: MatrixImageBuilder<LatticeElement<f32>> = MatrixImageBuilder::init()
+        .with_initial_value(LatticeElement::from(0.0))
+        .with_height_and_width(size_x,size_y);
     
     let coefficients = Coefficients {
         width: size_x as f32,
@@ -70,7 +74,7 @@ fn main() -> Result<(), error::MatrixError> {
             let matrix_to_drawU = max_builder.build()*matrixU.clone();
             let matrix_to_drawV = max_builder.build()*matrixV.clone();
             let _image = matrixU
-                .draw_multi_channel(&[matrix_to_drawU, max_builder.build(), matrix_to_drawV, max_builder.build()], None)?
+                .draw_multi_channel(&[matrix_to_drawU, min_builder.build(), matrix_to_drawV, max_builder.build()], Some(&[Red, Green, Blue, Alpha]))?
                 .save(prepend+&id.to_string()+".png")?;
         }
         
