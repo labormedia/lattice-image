@@ -215,3 +215,18 @@ where
     ///   in the data structure for which this trait is implemented.
     fn optimal_update(&mut self) -> &U;
 }
+
+pub trait TryOptimalModel<T, U>: TryModel
+where
+ T: PartialOrd,
+ U: Optimal<T>
+{
+    ///   Behaviour for pair of elements based on the Objective type defined in the Model trait implementation.
+    fn try_optimal_model(
+        &mut self,
+        x: (u32, u32), 
+    ) ->  Result<Self::Objective, Self::Error>;
+    ///   Recursive implementation for type U, which is intended to be included
+    ///   in the data structure for which this trait is implemented.
+    fn try_optimal_update(&mut self) -> Result<&U, Self::Error>;
+}
