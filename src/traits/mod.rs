@@ -28,6 +28,7 @@ pub use max::*;
 
 pub mod model;
 pub use model::Model;
+pub use model::TryModel;
 
 pub trait Matrix<T>
 //where
