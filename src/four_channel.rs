@@ -175,7 +175,12 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 (neighbor, objective(self, self_point, neighbor))
             })
             .max_by(|a, b| {
-                a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
+                match a.1.partial_cmp(&b.1) {
+                    Some(x) => x,
+                    None => { 
+                        core::cmp::Ordering::Equal
+                    },
+                }
             })
     }
     fn optimal_peer_internal_values<V>(
@@ -193,7 +198,12 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 (neighbor, objective(self, self_point, neighbor))
             })
             .max_by(|a, b| {
-                a.1.0.partial_cmp(&b.1.0).expect("PartialOrd not implemented for type T.")
+                match a.1.0.partial_cmp(&b.1.0) {
+                    Some(x) => x,
+                    None => { 
+                        core::cmp::Ordering::Equal
+                    },
+                }
             })
     }
     fn optimal_peer_with_coefficients<U: Copy>(
@@ -212,7 +222,12 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 (neighbor, objective(self, self_point, neighbor, c))
             })
             .max_by(|a, b| {
-                a.1.partial_cmp(&b.1).expect("PartialOrd not implemented for type T.")
+                match a.1.partial_cmp(&b.1) {
+                    Some(x) => x,
+                    None => { 
+                        core::cmp::Ordering::Equal
+                    },
+                }
             })
     }
     fn optimal_peer_internal_values_with_coefficients<U, V, F>(
@@ -233,7 +248,12 @@ impl<T: Clone + Debug + Default + traits::Max + Add<Output=T> + Div<Output=T> + 
                 (neighbor, objective(self, self_point, neighbor, c))
             })
             .max_by(move |a, b| {
-                a.1.0.partial_cmp(&b.1.0).expect("PartialOrd not implemented for type T.")
+                match a.1.0.partial_cmp(&b.1.0) {
+                    Some(x) => x,
+                    None => { 
+                        core::cmp::Ordering::Equal
+                    },
+                }
             })
     }
     fn optimal_peer_internal_values_with_coefficients_and_hood<U, V, F>(
